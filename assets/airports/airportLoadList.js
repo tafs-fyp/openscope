@@ -186,7 +186,7 @@ window.AIRPORT_LOAD_LIST = (function() { // eslint-disable-line wrap-iife
         {
             icao: 'katl',
             level: 'hard',
-            name: 'Hartsfield–Jackson Atlanta Int\'l',
+            name: 'Hartsfield–Jackson Atlanta Int\'l: Finals Practice: 7 MIT',
             premium: false
         },
         {
