@@ -218,6 +218,12 @@ window.AIRPORT_LOAD_LIST = (function() { // eslint-disable-line wrap-iife
             level: 'hard',
             name: 'KATL: Converging Streams: 6 MIT --> 11.5 MIT',
             premium: false
+        },
+        {
+            icao: '6atl',
+            level: 'hard',
+            name: 'KATL: Prop vs Jet (each 15 MIT)',
+            premium: false
         // },
         // {
         //     icao: 'kaus',
