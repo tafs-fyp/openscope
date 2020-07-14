@@ -373,11 +373,27 @@ export default class AirportModel {
         this._runwayCollection = new RunwayCollection(data.runways, this._positionModel);
         this.mapCollection = new MapCollection(data.maps, data.defaultMaps, this.positionModel, this.magneticNorth);
 
+        this._initRangeRings(data.rangeRings);
         this.loadTerrain();
         this.buildAirportAirspace(data.airspace);
         this.setActiveRunwaysFromNames(data.arrivalRunway, data.departureRunway);
         this.buildRestrictedAreas(data.restricted);
         this.updateCurrentWind(data.wind);
+    }
+
+    _initRangeRings(data) {
+        if (!data) {
+            this.rangeRings = DEFAULT_RANGE_RINGS;
+
+            return;
+        }
+
+        this.rangeRings = data;
+        this.rangeRings.center = new DynamicPositionModel(
+            data.center,
+            this.positionModel,
+            this.magneticNorth
+        );
     }
 
     /**
@@ -419,14 +435,7 @@ export default class AirportModel {
         this.perimeter = _head(this.airspace);
         this.ctr_radius = Math.max(
             ..._map(this.perimeter.poly, (vertexPosition) => vlen(
-                vsub(
-                    vertexPosition.relativePosition,
-                    DynamicPositionModel.calculateRelativePosition(
-                        this.rangeRings.center,
-                        this._positionModel,
-                        this.magneticNorth
-                    )
-                )
+                vsub(vertexPosition.relativePosition, this.rangeRings.center.relativePosition)
             ))
         );
     }
