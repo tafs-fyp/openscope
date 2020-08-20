@@ -212,7 +212,7 @@ window.AIRPORT_LOAD_LIST = (function() { // eslint-disable-line wrap-iife
         },
         {
             icao: 'kbwi',
-            level: 'hard', 
+            level: 'hard',
             name: 'Baltimore-Washington International Thurgood Marshall Airport',
             premium: false
         },
