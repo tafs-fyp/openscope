@@ -26,6 +26,7 @@ import {
 } from './constants/inputConstants';
 import { SELECTORS, CLASSNAMES } from './constants/selectors';
 import { TRACKABLE_EVENT } from './constants/trackableEvents';
+import DynamicPositionModel from './base/DynamicPositionModel';
 
 // Temporary const declaration here to attach to the window AND use as internal propert
 const input = {};
@@ -221,11 +222,12 @@ export default class InputController {
      * @private
      */
     _addMeasurePoint(event, shouldReplaceLastPoint = false) {
-        const currentMousePosition = CanvasStageModel.translateMousePositionToCanvasPosition(
-            event.pageX, event.pageY
-        );
-        const { x, y } = currentMousePosition;
-        let modelToUse = this._translatePointToKilometers(x, y);
+        // const currentMousePosition = CanvasStageModel.translateMousePositionToCanvasPosition(
+        //     event.pageX, event.pageY
+        // );
+        // const { x, y } = currentMousePosition;
+        // let modelToUse = this._translatePointToKilometers(x, y);
+        let modelToUse = this._getMouseRelativePositionFromEvent(event);
 
         // Snapping should only be done when the shift key is depressed
         if (event.originalEvent.shiftKey) {
@@ -627,7 +629,6 @@ export default class InputController {
         }
     }
 
-
     /**
      * @for InputController
      * @method _onKeydown
@@ -1003,6 +1004,38 @@ export default class InputController {
     }
 
     /**
+     * Retrieve and return the x/y canvas position where the user clicked in the provided event, where the
+     * x/y origin is the center of the canvas. All units are pixels.
+     *
+     * @for InputController
+     * @method _getMousePositionRelativeToCenterOfViewFromEvent
+     * @param event {jQuery Event}
+     * @return {object} in shape of `{x: -154, y: 388}`, in pixels
+     */
+    _getMousePositionRelativeToCenterOfViewFromEvent(event) {
+        const positionRelativeToCenterOfView = CanvasStageModel.translateMousePositionToCanvasPosition(
+            event.pageX, event.pageY
+        );
+
+        return positionRelativeToCenterOfView;
+    }
+
+    /**
+     * Retrieve and return the x/y relative position where the user clicked in the provided event
+     *
+     * @for InputController
+     * @method _getMouseRelativePositionFromEvent
+     * @param event {jQuery Event}
+     * @return {array<number>}
+     */
+    _getMouseRelativePositionFromEvent(event) {
+        const { x, y } = this._getMousePositionRelativeToCenterOfViewFromEvent(event); // ignores panning/zooming
+        const relativePosition = this._translatePointToKilometers(x, y);
+
+        return relativePosition;
+    }
+
+    /**
      * Triggered when a user clicks on the `right` mouse button and
      * records the position of the `right click` event.
      *
@@ -1012,6 +1045,24 @@ export default class InputController {
     _onRightMousePress(event) {
         if (MeasureTool.isMeasuring) {
             this._removePreviousMeasurePoint();
+
+            return;
+        }
+
+        if (event.originalEvent.shiftKey && event.originalEvent.altKey) {
+            const relativePosition = this._getMouseRelativePositionFromEvent(event);
+            const referencePosition = AirportController.current.positionModel;
+            const latLonCoordinates = DynamicPositionModel.calculateGpsCoordinatesFromRelativePosition(
+                relativePosition, referencePosition, referencePosition.magneticNorth
+            );
+
+            console.log(relativePosition);
+            const other = new DynamicPositionModel(latLonCoordinates, referencePosition, referencePosition.magneticNorth);
+            console.log(other.relativePosition);
+            console.log(' - - ');
+            console.log(latLonCoordinates);
+            console.log(other.gps);
+            console.log('----');
 
             return;
         }
@@ -1089,11 +1140,17 @@ export default class InputController {
     /**
      * Translate the specified x, y pixel coordinates to map kilometers
      *
+     * Input coordinates must be relative to the center of the view, and irrespective of the actual
+     * position of the airport within the canvas.
+     *
+     * Output coordinates will have the current pan and zoom applied, and will show how far (in km)
+     * the specified point is from the reference position, with each value in km.
+     *
      * @for InputController
      * @method _translatePointToKilometers
-     * @param x {number}
-     * @param y {number}
-     * @returns {array<number>}
+     * @param x {number} number of pixels to the right of the center of the view
+     * @param y {number} number of pixels ABOVE the center of the view
+     * @returns {array<number>} [km east of referencePosition, km north of referencePosition]
      * @private
      */
     _translatePointToKilometers(x, y) {

@@ -8,7 +8,12 @@ import {
 } from './positionModelHelpers';
 import { radians_normalize } from '../math/circle';
 import {
+    vlen,
+    vradial
+} from '../math/vector';
+import {
     degreesToRadians,
+    nm,
     parseCoordinate,
     parseElevation,
     radiansToDegrees
@@ -136,7 +141,9 @@ export default class DynamicPositionModel {
     }
 
     /**
-     * Relative position, in km offset from the airport
+     * Relative position, in km offset from the airport in [x, y] order
+     *
+     * NOTE: These offsets east/west or north/south are in relation to TRUE NORTH, not magnetic north!
      *
      * @property relativePosition
      * @return {array}
@@ -267,13 +274,13 @@ export default class DynamicPositionModel {
      *
      * @for DynamicPositionModel
      * @method generateDynamicPositionFromBearingAndDistance
-     * @param bearing {number} magnetic bearing, in radians
+     * @param magneticBearing {number} magnetic bearing, in radians
      * @param distance {number} distance, in nautical miles
      * @return {array} [latitude, longitude]
      */
-    generateCoordinatesFromBearingAndDistance(bearing, distance) {
+    generateCoordinatesFromBearingAndDistance(magneticBearing, distance) {
         const R = PHYSICS_CONSTANTS.EARTH_RADIUS_NM;
-        const θ = bearing + this._magneticNorth; // true bearing, in radians
+        const θ = magneticBearing + this._magneticNorth; // true bearing, in radians
         const d = distance;
         const δ = d / R; // angular distance, in earth laps
         const φ1 = degreesToRadians(this.latitude);
@@ -348,15 +355,16 @@ export default class DynamicPositionModel {
 }
 
 /**
- * Calculate x/y position from latitude and longitude and a referencePosition
+ * Calculate the x/y offset (in km) from the referencePosition for a specified lat/lon location
  *
  * Provides a static method to calculate position without instantiating a `DynamicPositionModel` class.
  *
- * @function getPosition
- * @param coordinates {array<string>}
+ * @for DynamicPositionModel
+ * @method calculateRelativePosition
+ * @param coordinates {array<string>} [latitude, longitude]
  * @param referencePosition {DynamicPositionModel|StaticPositionModel|null}
- * @param magneticNorth {number}
- * @return {array}
+ * @param magneticNorth {number} radians east
+ * @return {array<number>} [x, y] with both values in km
  * @static
  */
 DynamicPositionModel.calculateRelativePosition = (coordinates, referencePosition, magneticNorth) => {
@@ -380,4 +388,55 @@ DynamicPositionModel.calculateRelativePosition = (coordinates, referencePosition
     const { x, y } = adjustForMagneticNorth(canvasPositionX, canvasPositionY, magneticNorth);
 
     return [x, y];
+};
+
+/**
+ * Calculate lat/lon position from an x/y position and a referencePosition
+ *
+ * Provides a static method to calculate lat/lon coordinates without instantiating a `DynamicPositionModel` class.
+ *
+ * @for DynamicPositionModel
+ * @method calculateGpsCoordinatesFromRelativePosition
+ * @param relativePosition {array<number>}
+ * @param referencePosition {DynamicPositionModel|StaticPositionModel|null}
+ * @param magneticNorth {number}
+ * @return {array}
+ * @static
+ */
+DynamicPositionModel.calculateGpsCoordinatesFromRelativePosition = (relativePosition, referencePosition, magneticNorth) => {
+    if (!relativePosition || !referencePosition || !_isNumber(magneticNorth)) {
+        throw new TypeError('Invalid parameter. DynamicPositionModel.calculateGpsCoordinatesFromRelativePosition() requires ' +
+        'coordinates, referencePosition and magneticNorth as parameters');
+    }
+
+    // apply negative magneticNorth to REMOVE all magnetic declination so we can directly scale relative --> GPS coordinates
+    // const { x, y } = adjustForMagneticNorth(relativePosition[0], relativePosition[1], -magneticNorth);
+    const x = relativePosition[0];
+    const y = relativePosition[1];
+    const offsetKm = [x, y];
+    // TODO: using flat maths is not accurate enough for the use case of this functionality -- use haversine
+    const trueBearing = vradial(offsetKm);
+    const magneticBearing = trueBearing;// radians_normalize(trueBearing - magneticNorth);
+    const distance = nm(vlen(offsetKm));
+    // FIXME: WHY DOES THIS WORK? IT'S USING THE TRUE BEARING WHEN WE ASK FOR THE MAGNETIC, BUT IT GETS THE RIGHT ANSWER. WHY?
+    const coordinates = referencePosition.generateCoordinatesFromBearingAndDistance(magneticBearing, distance);
+
+    return coordinates;
+
+
+    // const latitude = parseCoordinate(relativePosition[GPS_COORDINATE_INDEX.LATITUDE]);
+    // const longitude = parseCoordinate(relativePosition[GPS_COORDINATE_INDEX.LONGITUDE]);
+    // const canvasPositionX = calculateDistanceToPointForX(
+    //     referencePosition,
+    //     referencePosition.latitude,
+    //     longitude
+    // );
+    // const canvasPositionY = calculateDistanceToPointForY(
+    //     referencePosition,
+    //     latitude,
+    //     referencePosition.longitude
+    // );
+    // const { x, y } = adjustForMagneticNorth(canvasPositionX, canvasPositionY, magneticNorth);
+
+    // return [x, y];
 };

@@ -68,7 +68,7 @@ export const calculateDistanceToPointForY = (referencePosition, latitude, longit
  * @param originalX {string}
  * @param originalY {string}
  * @param magneticNorth {number}
- * @return {object}
+ * @return {object} shape of {x: {number}, y: {number}}
  */
 export const adjustForMagneticNorth = (originalX, originalY, magneticNorth) => {
     const t = Math.atan2(originalY, originalX) + magneticNorth;

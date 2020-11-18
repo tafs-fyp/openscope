@@ -199,23 +199,24 @@ class CanvasStageModel {
         return kilometerValue * this._scale;
     }
 
+    // FIXME: THIS DOES NOT PRODUCE A "CANVAS" USABLE POSITION, PLEASE REWORK OR RENAME
     /**
-     * Translate a mouse position, in pixels, as it relates to the
-     * browser window to canvas position
+     * Translate a mouse position, relative to the top-left of the browser window, to a
+     * coordinate system where the origin is at the center of the canvas
      *
      * @for CanvasStageModel
      * @method translateMousePositionToCanvasPosition
-     * @param x {number}
-     * @param y {number}
+     * @param x {number} pixels to the right of the origin (which is at top-left)
+     * @param y {number} pixels down from the origin (which is at the top-left)
      * @return {object<string, number>}
      */
     translateMousePositionToCanvasPosition(x, y) {
-        const canvasPositionX = x - this.halfWidth;
-        const canvasPositionY = -y + this.halfHeight;
+        const positionX = x - this.halfWidth;
+        const positionY = -y + this.halfHeight;
 
         return {
-            x: canvasPositionX,
-            y: canvasPositionY
+            x: positionX,
+            y: positionY
         };
     }
 
