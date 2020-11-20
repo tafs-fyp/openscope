@@ -5,6 +5,7 @@
 - <a href="https://github.com/openscope/openscope/issues/1565" target="_blank">#1565</a> - Prevent aircraft from taxiing to a runway they're already holding short of
 
 ### Enhancements & Refactors
+- <a href="https://github.com/openscope/openscope/issues/1677" target="_blank">#1677</a> - Update Munich airport (EDDM)
 
 
 # 6.21.0 (November 4, 2020)
