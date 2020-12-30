@@ -463,12 +463,12 @@ window.AIRPORT_LOAD_LIST = (function() { // eslint-disable-line wrap-iife
             name: 'Sendai Airport',
             premium: false
         },
-        // {
-        //     icao: 'rjtt',
-        //     level: 'hard',
-        //     name: 'Tokyo Haneda International Airport',
-        //     premium: false
-        // },
+        {
+            icao: 'rjtt',
+            level: 'hard',
+            name: 'Tokyo Haneda International Airport',
+            premium: false
+        },
         // {
         //     icao: 'rksi',
         //     level: 'hard',
