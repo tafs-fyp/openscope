@@ -90,7 +90,7 @@ _Syntax -_ `AAL123 cvs` or `AAL123 cvs [alt]`
 
 ### Takeoff
 
-_Aliases -_ `takeoff`, `to`, `cto`
+_Aliases -_ `takeoff`, `to`, `cto`, `/`
 
 _Hotkey -_ `numpad /`
 
@@ -103,7 +103,7 @@ _Syntax -_ `AAL123 cto`
 
 ### Taxi
 
-_Aliases -_ `taxi` / `wait` / `w`
+_Aliases -_ `taxi`, `wait`, `w`
 
 _Information -_ This command tells the specified plane to taxi to and hold short
 of the specified runway.
@@ -141,7 +141,7 @@ _Syntax -_ `AAL123 dvs` or `AAL123 dvs [alt]`
 
 ### ILS
 
-_Aliases -_ `ils` / `i` / `*`
+_Aliases -_ `ils`, `i`, `*`
 
 _Hotkey -_  `numpad *`
 
@@ -160,7 +160,7 @@ These commands allow you to manipulate the route in the aircraft's FMS.
 
 ### ~~Fix~~
 
-~~_Aliases -_ `f` / `fix` / `track`~~
+~~_Aliases -_ `f`, `fix`, `track`~~
 
 ~~_Syntax -_ `AAL123 f [fixname]`~~
 
@@ -216,7 +216,7 @@ _Syntax -_ `AAL123 continue` or `AAL123 xh BOTON`
 
 ### Proceed Direct
 
-_Aliases -_ `direct` / `pd` / `dct`
+_Aliases -_ `direct`, `pd`, `dct`
 
 _Information -_ This command instructs the aircraft to go direct to a
 navigational fix, taking a shortcut. For example, if an aircraft is flying
@@ -307,9 +307,9 @@ These commands control the three most basic ways we can control aircraft, collec
 
 ### Altitude
 
-_Aliases -_ `climb` / `c` / `descend` / `d` / `altitude` / `a`
+_Aliases -_ `climb`, `c`, `descend`, `d`, `altitude`, `a`
 
-_Hotkeys -_ `up arrow` / `down arrow` (if "Control Method" setting = "Arrow Keys")
+_Hotkeys -_ `up arrow`, `down arrow` (if "Control Method" setting = "Arrow Keys")
 
 _Information -_ This command tells the specified plane the altitude, in
 hundreds of feet (flight levels), it should travel to. This means that when
@@ -332,9 +332,9 @@ _Syntax -_ `AAL123 fph`
 
 ### Heading
 
-_Aliases -_ `heading` / `h` / `turn` / `t` / `fh`
+_Aliases -_ `heading`, `h`, `turn`, `t`, `fh`
 
-_Hotkeys -_ `left arrow` / `right arrow` (if "Control Method" setting = "Arrow Keys")
+_Hotkeys -_ `left arrow`, `right arrow` (if "Control Method" setting = "Arrow Keys")
 
 _Information -_ This command tells the aircraft the target heading to fly
 towards: up (north) is 360, right (east) is 090, down (south) is 180, and left
@@ -353,9 +353,9 @@ _Syntax -_ `AAL123 fh [hdg]` or `AAL123 (rightarrow) [hdg]` or `AAL123 t r 270` 
 
 ### Speed
 
-_Aliases -_ `speed` / `slow` / `sp` / `+` / `-`
+_Aliases -_ `speed`, `slow`, `sp`, `+`, `-`
 
-_Hotkeys -_ `numpad +` / `numpad -`
+_Hotkeys -_ `numpad +`, `numpad -`
 
 _Information -_ This command sets the target speed; aircraft will stay within
 their safe speeds if you tell them to fly faster or slower than they are able
@@ -475,7 +475,9 @@ _Syntax -_ `pause`
 
 ### Timewarp
 
-_Information -_ Sets the rate at which time passes, normal is `1`. While the time warp button can only set the rate to `1`, `2`, or `5`, the command accepts any number.
+~~_Aliases -_ `tw`~~
+
+_Information -_ Sets the rate at which time passes, normal is `1`. While the time warp button can only set the rate to `1`, `2`, or `5`, the timewarp command accepts any value greater than or equal to 1.
 
 _Parameters -_ A number to multiply the rate at which time passes. `1` resets to normal time.
 
