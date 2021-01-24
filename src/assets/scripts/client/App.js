@@ -51,7 +51,7 @@ export default class App {
         this.prop.log = LOG.DEBUG;
         this.prop.loaded = false;
 
-        this.tafs_agent = new Agent(this);
+        this.tafs_agent = new Agent(this._appController);
 
         return this.setupHandlers()
             .loadInitialAirport(airportLoadList, initialAirportToLoad);
