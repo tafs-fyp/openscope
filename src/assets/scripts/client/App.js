@@ -2,6 +2,7 @@ import $ from 'jquery';
 import AppController from './AppController';
 import EventBus from './lib/EventBus';
 import TimeKeeper from './engine/TimeKeeper';
+import Agent from './tafs';
 import { DEFAULT_AIRPORT_ICAO } from './constants/airportConstants';
 import { EVENT } from './constants/eventNames';
 import { LOG } from './constants/logLevel';
@@ -49,6 +50,8 @@ export default class App {
         this.prop.complete = false;
         this.prop.log = LOG.DEBUG;
         this.prop.loaded = false;
+
+        this.tafs_agent = new Agent(this);
 
         return this.setupHandlers()
             .loadInitialAirport(airportLoadList, initialAirportToLoad);
@@ -332,6 +335,7 @@ export default class App {
         requestAnimationFrame(this.onUpdateHandler);
 
         this.updatePre();
+        this.tafs_agent.step();
         this.updatePost();
         TimeKeeper.update();
 
