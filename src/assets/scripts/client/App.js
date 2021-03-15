@@ -51,7 +51,7 @@ export default class App {
         this.prop.log = LOG.DEBUG;
         this.prop.loaded = false;
 
-        this.tafs_agent = new Agent(this._appController);
+        this.tafs_agent = null;
 
         return this.setupHandlers()
             .loadInitialAirport(airportLoadList, initialAirportToLoad);
@@ -258,7 +258,7 @@ export default class App {
      */
     init() {
         this._appController.init();
-
+        this.tafs_agent = new Agent(this._appController);
         return this;
     }
 
