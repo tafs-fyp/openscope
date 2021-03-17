@@ -120,6 +120,11 @@ export default class AircraftController {
          */
         this._stripViewController = new StripViewController();
 
+        this.getConflicts = () => {
+            return this.conflicts;
+        };
+
+
         return this.init()
             ._setupHandlers()
             .enable();
@@ -433,6 +438,13 @@ export default class AircraftController {
         aircraft.addConflict(conflict, otherAircraft);
         otherAircraft.addConflict(conflict, aircraft);
     }
+
+
+    //returns all conflicts happening in the game
+
+    // getConflicts(){
+    //     return this.conflicts;
+    // }
 
     /**
      * Pass the call onto the `airlineController` to remove flightNumber

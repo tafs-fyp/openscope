@@ -50,8 +50,9 @@ export default class App {
         this.prop.complete = false;
         this.prop.log = LOG.DEBUG;
         this.prop.loaded = false;
-
         this.tafs_agent = null;
+        // 
+        // this.tafs_agent = new Agent(this._appController);
 
         return this.setupHandlers()
             .loadInitialAirport(airportLoadList, initialAirportToLoad);
@@ -72,7 +73,6 @@ export default class App {
         this.onUpdateHandler = this.update.bind(this);
 
         this.eventBus.on(EVENT.PAUSE_UPDATE_LOOP, this.onPauseHandler);
-
         return this;
     }
 
@@ -95,6 +95,8 @@ export default class App {
         $.getJSON(`assets/airports/${initialAirportIcao}.json`)
             .then((response) => this.loadAirlinesAndAircraftHandler(airportLoadList, initialAirportIcao, response))
             .catch((error) => this.loadDefaultAiportAfterStorageIcaoFailureHandler(airportLoadList));
+        
+           
     }
 
     /**
@@ -166,6 +168,7 @@ export default class App {
      * @param aircraftTypeDefinitionList {array}  List of all Aircraft definitions
      * @param airportGuides {object}          Airport guide JSON
      */
+
     setupChildren(
         airportLoadList,
         initialAirportIcao,
@@ -183,6 +186,7 @@ export default class App {
             airportGuides
         );
 
+        this.tafs_agent = new Agent(this._appController);
         this.enable();
     }
 
@@ -258,7 +262,7 @@ export default class App {
      */
     init() {
         this._appController.init();
-        this.tafs_agent = new Agent(this._appController);
+
         return this;
     }
 
