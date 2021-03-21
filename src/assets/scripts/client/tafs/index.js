@@ -15,7 +15,6 @@ export default class Agent {
     }
 
     step() {
-        console.log("Executing Step");
         this.departure_manager.step();
     }
 }
