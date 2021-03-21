@@ -2702,6 +2702,13 @@ export default class AircraftModel {
         this.conflicts[conflictingAircraft.callsign] = conflict;
     }
 
+    //returns conflict for a particular aircraft simulated in the game
+    getConflicts(){
+        return this.conflicts;
+    }
+
+
+
     /**
      * Used to determine if a `conflictingAircraft.callsign` already exists within
      * the list of known conflicts for an aircaft
