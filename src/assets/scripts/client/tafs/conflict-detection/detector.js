@@ -1,17 +1,13 @@
-
-
-
 export default class Detector {
-    
-    constructor(aircraftController){
+    constructor(aircraftController) {
         this.aircraftcontroller = aircraftController;
     }
 
-    getConflicts(){
+    getConflicts() {
         return this.aircraftcontroller.getConflicts();
     }
 
-    step(){
-        console.log("Total conflicts: " + this.getConflicts().length)
+    step() {
+        // console.log("Total conflicts: " + this.getConflicts().length);
     }
 }

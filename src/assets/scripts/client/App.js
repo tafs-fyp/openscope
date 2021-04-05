@@ -51,8 +51,6 @@ export default class App {
         this.prop.log = LOG.DEBUG;
         this.prop.loaded = false;
         this.tafs_agent = null;
-        // 
-        // this.tafs_agent = new Agent(this._appController);
 
         return this.setupHandlers()
             .loadInitialAirport(airportLoadList, initialAirportToLoad);
@@ -339,7 +337,6 @@ export default class App {
         requestAnimationFrame(this.onUpdateHandler);
 
         this.updatePre();
-        this.tafs_agent.step();
         this.updatePost();
         TimeKeeper.update();
 
