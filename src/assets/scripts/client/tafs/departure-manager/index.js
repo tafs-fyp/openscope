@@ -1,9 +1,13 @@
 import _ from "lodash";
-import { parse } from "path";
 import { distanceToPoint } from "../../math/circle";
 
+const AIRPORT_ICAO = "EDDH";
 const RUNWAY_TIME_DELAY = 90000;
-const TAXI_TAKEOFF_DELAY = 10000;
+const TAXI_TAKEOFF_DELAY = 15000;
+
+const MAX_AIRPLANES_PER_SID = 20;
+const MAX_SID_DISTANCE = 250;
+const MAX_DEST_BADNESS = 250;
 
 const runways_used = {};
 class RankedSID {
@@ -11,7 +15,7 @@ class RankedSID {
         this.fixes = fixes;
         this.sid_data = sid_data;
 
-        this.traffic_density = 0;
+        this.traffic = 0;
         this.last_used = new Date();
 
         this.distances = {};
@@ -79,7 +83,11 @@ class RankedSID {
                 this.fixes[exit_wp][1]
             );
 
-            const tmp = this.traffic_density + dest_badness + distance;
+            const tmp =
+                Math.tanh(this.traffic / MAX_AIRPLANES_PER_SID) +
+                Math.tanh(dest_badness / MAX_DEST_BADNESS) +
+                Math.tanh(distance / MAX_SID_DISTANCE);
+
             if (tmp < rank) {
                 rank = tmp;
                 best_entry = entry_name;
@@ -103,7 +111,7 @@ class RankedSID {
             .slice(-1)[0]
             ._waypointCollection.slice(-1)[0]._name;
 
-        let runway = parseInt(entry.replace("EDDH", ""));
+        let runway = parseInt(entry.replace(AIRPORT_ICAO, ""));
         if (runway > 18) runway -= 18;
 
         if (
@@ -116,17 +124,20 @@ class RankedSID {
             `${aircraft.callsign} reroute ${entry}.${this.sid_data._icao}.${exit}..${dest_wp}`
         );
         sim_writer.send_command(
-            `${aircraft.callsign} taxi ${entry.replace("EDDH", "")}`
+            `${aircraft.callsign} taxi ${entry.replace(AIRPORT_ICAO, "")}`
         );
         sim_writer.send_command(`${aircraft.callsign} caf`);
 
         setTimeout(() => {
             sim_writer.send_command(`${aircraft.callsign} takeoff cvs`);
+            this.traffic += 1;
+
             this.last_used = new Date();
             runways_used[runway] = new Date();
         }, TAXI_TAKEOFF_DELAY);
 
         this.last_used = new Date();
+        runways_used[runway] = new Date();
     }
 }
 
