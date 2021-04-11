@@ -2,18 +2,23 @@ import _ from "lodash";
 import { distanceToPoint } from "../../math/circle";
 
 const AIRPORT_ICAO = "EDDH";
+const SID_TIME_DELAY = 60000;
 const RUNWAY_TIME_DELAY = 90000;
 const TAXI_TAKEOFF_DELAY = 15000;
 
 const MAX_AIRPLANES_PER_SID = 20;
 const MAX_SID_DISTANCE = 250;
-const MAX_DEST_BADNESS = 250;
+const MAX_SID_DEST_DISTANCE = 250;
 
-const runways_used = {};
-class RankedSID {
+const runways_last_used = {};
+
+class ScoredSID {
     constructor(sid_data, fixes) {
         this.fixes = fixes;
         this.sid_data = sid_data;
+
+        this.queue = [];
+        this.departed = [];
 
         this.traffic = 0;
         this.last_used = new Date();
@@ -28,9 +33,6 @@ class RankedSID {
                 ] = this.calculate_path_distance(path);
             });
         });
-
-        this.queue = [];
-        this.departed = [];
     }
 
     calculate_path_distance(path) {
@@ -56,46 +58,48 @@ class RankedSID {
         return total;
     }
 
-    calculate_rank_and_entry_exit_ways(aircraft) {
-        let dest_wp = aircraft.fms._routeModel._legCollection
+    calculate_score_entry_exit(aircraft) {
+        const aircraft_dest_wp = aircraft.fms._routeModel._legCollection
             .slice(-1)[0]
-            ._waypointCollection.slice(-1)[0]._name;
-        dest_wp = dest_wp.replace(/[\^@]/gi, "");
+            ._waypointCollection.slice(-1)[0]
+            ._name.replace(/[\^@]/gi, "");
 
-        let rank = Infinity;
+        let best_score = Infinity;
         let best_entry = "";
         let best_exit = "";
 
-        _.forEach(this.distances, (distance, entexit) => {
+        _.forEach(this.distances, (sid_distance, entexit) => {
             const [entry_name, exit_name] = entexit.split(",");
             const entry_path = this.sid_data._entryPoints[entry_name];
             const exit_path = this.sid_data._exitPoints[exit_name];
-            let path = [...entry_path, ...this.sid_data._body, ...exit_path];
+            const path = [...entry_path, ...this.sid_data._body, ...exit_path];
 
-            let exit_wp = path.slice(-1)[0];
-            exit_wp = Array.isArray(exit_wp) ? exit_wp[0] : exit_wp;
-            exit_wp.replace(/[\^@]/gi, "");
+            let sid_exit_wp = path.slice(-1)[0];
+            sid_exit_wp = Array.isArray(sid_exit_wp)
+                ? sid_exit_wp[0]
+                : sid_exit_wp;
+            sid_exit_wp = sid_exit_wp.replace(/[\^@]/gi, "");
 
-            const dest_badness = distanceToPoint(
-                this.fixes[dest_wp][0],
-                this.fixes[dest_wp][1],
-                this.fixes[exit_wp][0],
-                this.fixes[exit_wp][1]
+            const sid_dest_distance = distanceToPoint(
+                this.fixes[aircraft_dest_wp][0],
+                this.fixes[aircraft_dest_wp][1],
+                this.fixes[sid_exit_wp][0],
+                this.fixes[sid_exit_wp][1]
             );
 
             const tmp =
                 Math.tanh(this.traffic / MAX_AIRPLANES_PER_SID) +
-                Math.tanh(dest_badness / MAX_DEST_BADNESS) +
-                Math.tanh(distance / MAX_SID_DISTANCE);
+                Math.tanh(sid_dest_distance / MAX_SID_DEST_DISTANCE) +
+                Math.tanh(sid_distance / MAX_SID_DISTANCE);
 
-            if (tmp < rank) {
-                rank = tmp;
+            if (tmp < best_score) {
+                best_score = tmp;
                 best_entry = entry_name;
                 best_exit = exit_name;
             }
         });
 
-        return [rank, best_entry, best_exit];
+        return [best_score, best_entry, best_exit];
     }
 
     add_to_queue(aircraft, entry, exit) {
@@ -104,7 +108,7 @@ class RankedSID {
 
     depart_plane(sim_writer) {
         const time_delta = Math.abs(new Date() - this.last_used);
-        if (time_delta < RUNWAY_TIME_DELAY || !this.queue.length) return;
+        if (time_delta < SID_TIME_DELAY || !this.queue.length) return;
 
         const [aircraft, entry, exit] = this.queue.shift();
         const dest_wp = aircraft.fms._routeModel._legCollection
@@ -115,8 +119,8 @@ class RankedSID {
         if (runway > 18) runway -= 18;
 
         if (
-            typeof runways_used[runway] !== "undefined" &&
-            Math.abs(new Date() - runways_used[runway]) < RUNWAY_TIME_DELAY
+            typeof runways_last_used[runway] !== "undefined" &&
+            Math.abs(new Date() - runways_last_used[runway]) < RUNWAY_TIME_DELAY
         )
             return;
 
@@ -129,15 +133,13 @@ class RankedSID {
         sim_writer.send_command(`${aircraft.callsign} caf`);
 
         setTimeout(() => {
-            sim_writer.send_command(`${aircraft.callsign} takeoff cvs`);
-            this.traffic += 1;
-
             this.last_used = new Date();
-            runways_used[runway] = new Date();
+            runways_last_used[runway] = new Date();
+            sim_writer.send_command(`${aircraft.callsign} takeoff cvs`);
         }, TAXI_TAKEOFF_DELAY);
 
         this.last_used = new Date();
-        runways_used[runway] = new Date();
+        runways_last_used[runway] = new Date();
     }
 }
 
@@ -154,27 +156,25 @@ export default class DepartureManager {
 
         this.sids = this.sim_reader
             .get_all_sids()
-            .map((sid) => new RankedSID(sid, this.fixes));
+            .map((sid) => new ScoredSID(sid, this.fixes));
 
-        this.ranks = {};
+        this.scores = {};
     }
 
     assign_sids() {
         _.forEach(this.sim_reader.get_departure_aircrafts(), (aircraft) => {
-            if (typeof this.ranks[aircraft.id] !== "undefined") return;
+            if (typeof this.scores[aircraft.id] !== "undefined") return;
 
-            this.ranks[aircraft.id] = [];
+            this.scores[aircraft.id] = [];
             _.forEach(this.sids, (sid) => {
-                const [
-                    rank,
-                    entry,
-                    exit,
-                ] = sid.calculate_rank_and_entry_exit_ways(aircraft);
-                this.ranks[aircraft.id].push([rank, entry, exit, sid]);
+                const [score, entry, exit] = sid.calculate_score_entry_exit(
+                    aircraft
+                );
+                this.scores[aircraft.id].push([score, entry, exit, sid]);
             });
 
-            const [rank, entry, exit, sid] = _.minBy(
-                this.ranks[aircraft.id],
+            const [score, entry, exit, sid] = _.minBy(
+                this.scores[aircraft.id],
                 (o) => o[0]
             );
             sid.add_to_queue(aircraft, entry, exit);
