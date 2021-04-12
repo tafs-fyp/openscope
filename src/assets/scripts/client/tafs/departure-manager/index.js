@@ -2,41 +2,36 @@ import _ from "lodash";
 import { distanceToPoint } from "../../math/circle";
 
 const AIRPORT_ICAO = "EDDH";
-const SID_TIME_DELAY = 60000;
+const SID_TIME_DELAY = 90000;
 const RUNWAY_TIME_DELAY = 90000;
-const TAXI_TAKEOFF_DELAY = 15000;
+const TAXI_TAKEOFF_DELAY = 20000;
 
-const MAX_AIRPLANES_PER_SID = 20;
-const MAX_SID_DISTANCE = 250;
-const MAX_SID_DEST_DISTANCE = 250;
+const runways_locked = {};
 
-const runways_last_used = {};
+function aircraft_flt_plan_start(aircraft) {
+    return aircraft.fms._routeModel._legCollection[0]._waypointCollection[0]._name.replace(
+        /[\^@]/gi,
+        ""
+    );
+}
 
-class ScoredSID {
-    constructor(sid_data, fixes) {
+class SIDModel {
+    constructor(sim_sid, fixes) {
         this.fixes = fixes;
-        this.sid_data = sid_data;
+        this.sim_sid = sim_sid;
 
         this.queue = [];
-        this.departed = [];
+        this.flying = [];
 
         this.traffic = 0;
-        this.last_used = new Date();
-
-        this.distances = {};
-        _.forEach(sid_data._entryPoints, (entry_path, entry_name) => {
-            _.forEach(sid_data._exitPoints, (exit_path, exit_name) => {
-                const path = [...entry_path, ...sid_data._body, ...exit_path];
-
-                this.distances[
-                    [entry_name, exit_name]
-                ] = this.calculate_path_distance(path);
-            });
-        });
+        this.last_used = null;
+        this.distance = this.calc_sid_distance();
     }
 
-    calculate_path_distance(path) {
-        let total = 0;
+    calc_sid_distance() {
+        let total = 0,
+            path = this.sim_sid._body;
+
         for (let i = 0; i < path.length - 1; i++) {
             const first_wp = (Array.isArray(path[i])
                 ? path[i][0]
@@ -58,95 +53,73 @@ class ScoredSID {
         return total;
     }
 
-    calculate_score_entry_exit(aircraft) {
-        const aircraft_dest_wp = aircraft.fms._routeModel._legCollection
-            .slice(-1)[0]
-            ._waypointCollection.slice(-1)[0]
-            ._name.replace(/[\^@]/gi, "");
-
-        let best_score = Infinity;
-        let best_entry = "";
-        let best_exit = "";
-
-        _.forEach(this.distances, (sid_distance, entexit) => {
-            const [entry_name, exit_name] = entexit.split(",");
-            const entry_path = this.sid_data._entryPoints[entry_name];
-            const exit_path = this.sid_data._exitPoints[exit_name];
-            const path = [...entry_path, ...this.sid_data._body, ...exit_path];
-
-            let sid_exit_wp = path.slice(-1)[0];
-            sid_exit_wp = Array.isArray(sid_exit_wp)
-                ? sid_exit_wp[0]
-                : sid_exit_wp;
-            sid_exit_wp = sid_exit_wp.replace(/[\^@]/gi, "");
-
-            const sid_dest_distance = distanceToPoint(
-                this.fixes[aircraft_dest_wp][0],
-                this.fixes[aircraft_dest_wp][1],
-                this.fixes[sid_exit_wp][0],
-                this.fixes[sid_exit_wp][1]
-            );
-
-            const tmp =
-                Math.tanh(this.traffic / MAX_AIRPLANES_PER_SID) +
-                Math.tanh(sid_dest_distance / MAX_SID_DEST_DISTANCE) +
-                Math.tanh(sid_distance / MAX_SID_DISTANCE);
-
-            if (tmp < best_score) {
-                best_score = tmp;
-                best_entry = entry_name;
-                best_exit = exit_name;
-            }
-        });
-
-        return [best_score, best_entry, best_exit];
+    get_supported_runways() {
+        return _.map(_.keys(this.sim_sid._entryPoints), (entry_name) =>
+            entry_name.replace(AIRPORT_ICAO, "")
+        );
     }
 
-    add_to_queue(aircraft, entry, exit) {
-        this.queue.push([aircraft, entry, exit]);
+    supports_one_of_runways(runways) {
+        return (
+            _.intersection(this.get_supported_runways(), runways).length != 0
+        );
     }
 
-    depart_plane(sim_writer) {
-        const time_delta = Math.abs(new Date() - this.last_used);
-        if (time_delta < SID_TIME_DELAY || !this.queue.length) return;
+    supports_exit_at(waypoint) {
+        return _.indexOf(_.keys(this.sim_sid._exitPoints), waypoint) != -1;
+    }
 
-        const [aircraft, entry, exit] = this.queue.shift();
-        const dest_wp = aircraft.fms._routeModel._legCollection
-            .slice(-1)[0]
-            ._waypointCollection.slice(-1)[0]._name;
+    add_to_queue(aircraft, departure_runways) {
+        const chosen_runway = _.sample(departure_runways);
+        const entry_name = `${AIRPORT_ICAO}${chosen_runway}`;
+        const exit_name = aircraft_flt_plan_start(aircraft);
+        this.queue.push([aircraft, entry_name, exit_name]);
+        this.traffic += 1;
+    }
 
-        let runway = parseInt(entry.replace(AIRPORT_ICAO, ""));
-        if (runway > 18) runway -= 18;
-
+    depart_from_queue(sim_writer) {
+        if (this.queue.length == 0) return;
         if (
-            typeof runways_last_used[runway] !== "undefined" &&
-            Math.abs(new Date() - runways_last_used[runway]) < RUNWAY_TIME_DELAY
+            this.last_used !== null &&
+            Math.abs(new Date() - this.last_used) < SID_TIME_DELAY
         )
             return;
 
+        const [aircraft, entry, exit] = this.queue[0];
+        const runway = entry.replace(AIRPORT_ICAO, "");
+
+        if (
+            _.defaultTo(runways_locked[runway], false) &&
+            Math.abs(new Date() - runways_locked[runway]) < RUNWAY_TIME_DELAY
+        )
+            return;
+
+        this.queue.shift();
+
         sim_writer.send_command(
-            `${aircraft.callsign} reroute ${entry}.${this.sid_data._icao}.${exit}..${dest_wp}`
+            `${aircraft.callsign} sid ${entry}.${this.sim_sid._icao}.${exit} caf`
         );
-        sim_writer.send_command(
-            `${aircraft.callsign} taxi ${entry.replace(AIRPORT_ICAO, "")}`
-        );
-        sim_writer.send_command(`${aircraft.callsign} caf`);
+
+        sim_writer.send_command(`${aircraft.callsign} taxi ${runway}`);
 
         setTimeout(() => {
-            this.last_used = new Date();
-            runways_last_used[runway] = new Date();
             sim_writer.send_command(`${aircraft.callsign} takeoff cvs`);
+            this.flying.push(aircraft);
+
+            runways_locked[runway] = new Date();
+            this.last_used = new Date();
         }, TAXI_TAKEOFF_DELAY);
 
+        runways_locked[runway] = new Date();
         this.last_used = new Date();
-        runways_last_used[runway] = new Date();
     }
 }
 
 export default class DepartureManager {
-    constructor(reader, writer) {
-        this.sim_reader = reader;
-        this.sim_writer = writer;
+    constructor(sim_reader, sim_writer, departure_runways) {
+        this.sim_reader = sim_reader;
+        this.sim_writer = sim_writer;
+        this.departure_runways = departure_runways;
 
         this.fixes = _.keyBy(this.sim_reader.get_all_fixes(), "name");
         this.fixes = _.mapValues(this.fixes, (fix) => [
@@ -156,35 +129,35 @@ export default class DepartureManager {
 
         this.sids = this.sim_reader
             .get_all_sids()
-            .map((sid) => new ScoredSID(sid, this.fixes));
+            .map((sim_sid) => new SIDModel(sim_sid, this.fixes));
 
-        this.scores = {};
+        this.available_sids = _.filter(this.sids, (sid) =>
+            sid.supports_one_of_runways(this.departure_runways)
+        );
+
+        this.sid_assignments = {};
     }
 
     assign_sids() {
-        _.forEach(this.sim_reader.get_departure_aircrafts(), (aircraft) => {
-            if (typeof this.scores[aircraft.id] !== "undefined") return;
+        for (const aircraft of this.sim_reader.get_departure_aircrafts()) {
+            if (_.defaultTo(this.sid_assignments[aircraft.id], false)) return;
+            const flight_plan_start = aircraft_flt_plan_start(aircraft);
 
-            this.scores[aircraft.id] = [];
-            _.forEach(this.sids, (sid) => {
-                const [score, entry, exit] = sid.calculate_score_entry_exit(
-                    aircraft
-                );
-                this.scores[aircraft.id].push([score, entry, exit, sid]);
-            });
-
-            const [score, entry, exit, sid] = _.minBy(
-                this.scores[aircraft.id],
-                (o) => o[0]
+            const valid_sids = _.filter(this.available_sids, (sid) =>
+                sid.supports_exit_at(flight_plan_start)
             );
-            sid.add_to_queue(aircraft, entry, exit);
-        });
+            valid_sids = _.sortBy(valid_sids, (sid) => sid.traffic).slice(0, 3);
+            valid_sids = _.sortBy(valid_sids, (sid) => sid.distance);
+
+            valid_sids[0].add_to_queue(aircraft, this.departure_runways);
+            this.sid_assignments[aircraft.id] = valid_sids[0];
+        }
     }
 
     step() {
         this.assign_sids();
-        _.forEach(this.sids, (sid) => {
-            sid.depart_plane(this.sim_writer);
-        });
+        for (const sid of this.available_sids) {
+            sid.depart_from_queue(this.sim_writer);
+        }
     }
 }

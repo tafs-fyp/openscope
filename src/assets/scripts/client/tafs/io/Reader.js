@@ -1,7 +1,9 @@
 import { FLIGHT_PHASE } from "../../constants/aircraftConstants";
 import { PROCEDURE_TYPE } from "../../constants/routeConstants";
+
 import FixCollection from "../../navigationLibrary/FixCollection";
 import NavigationLibrary from "../../navigationLibrary/NavigationLibrary";
+import AirportController from "../../airport/AirportController";
 
 export default class Reader {
     constructor(app_controller) {
@@ -28,5 +30,13 @@ export default class Reader {
         return this.get_all_aircrafts().filter(
             (aircraft) => aircraft.flightPhase === FLIGHT_PHASE.APRON
         );
+    }
+
+    get_runways() {
+        return AirportController.airport_get().runways;
+    }
+
+    get_wind() {
+        return AirportController.airport_get().getWindAtAltitude();
     }
 }
