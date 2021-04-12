@@ -7,8 +7,7 @@
 */ 
 
 export default class Detector {
-    
-    constructor(aircraftController){
+    constructor(aircraftController) {
         this.aircraftcontroller = aircraftController;
         this.count = 0;
     }
@@ -46,3 +45,11 @@ getInformation(){
         };
     }
 */
+//     getConflicts() {
+//         return this.aircraftcontroller.getConflicts();
+//     }
+
+//     step() {
+//         // console.log("Total conflicts: " + this.getConflicts().length);
+//     }
+// }
