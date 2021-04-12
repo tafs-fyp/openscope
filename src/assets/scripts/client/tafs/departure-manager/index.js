@@ -5,6 +5,6 @@ export default class DepartureManager {
     }
 
     step() {
-        console.log("Executing Departure Manger");
+        //console.log("Executing Departure Manger");
     }
 }
