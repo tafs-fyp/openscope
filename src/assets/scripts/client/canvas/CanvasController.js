@@ -217,9 +217,10 @@ export default class CanvasController {
          * @property theme
          * @type {object}
          * @default null
-         */
+         */        
         this.theme = null;
 
+       
         return this._init()
             ._setupHandlers()
             .enable();
@@ -1005,7 +1006,8 @@ export default class CanvasController {
      */
     _drawAircraftConflictRings(cc, radarTargetModel) {
         const { aircraftModel } = radarTargetModel;
-        const aircraftAlerts = aircraftModel.getAlerts();
+        const aircraftAlerts = aircraftModel.getAlerts(); //returns if aircrafts are in conflicts or violating something
+
         const radiusNm = 3;
 
         if (!aircraftAlerts[0]) {

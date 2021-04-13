@@ -2707,7 +2707,15 @@ export default class AircraftModel {
         return this.conflicts;
     }
 
-
+    //returns information about the aircraft
+    getInformation(){
+        return {
+            "id":this.id,
+            "airline" :this.airlineId,
+            "flightNumber" : this.flightNumber,
+            "callsign" : `${this.airlineId.toUpperCase()}${this.flightNumber.toUpperCase()}`
+        };
+    }
 
     /**
      * Used to determine if a `conflictingAircraft.callsign` already exists within

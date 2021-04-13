@@ -13,3 +13,5 @@ public/
 assets/style/
 assets/scripts/
 yarn.lock
+notes.txt
+*.ipynb

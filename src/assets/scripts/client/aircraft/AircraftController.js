@@ -27,7 +27,7 @@ import { INVALID_INDEX } from '../constants/globalConstants';
 const aircraft = {};
 
 /**
- *
+ * maintains a list of conflicting aircrafts (109)
  *
  * @class AircraftController
  */

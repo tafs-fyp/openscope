@@ -34,6 +34,25 @@ export default class AircraftConflict {
         this.conflicts = {};
         this.violations = {};
 
+
+        /**
+         * minimum horizontal seperation allowed b/w aircrafts 
+         *
+         * @type {int}
+         * @default 5
+         */
+         this.min_horizontal_seperation = 5;
+
+         /**
+          * minimum version seperation allowed b/w aircrafts
+          *
+          * @type {int}
+          * @default 160
+          */
+          this.min_vertical_seperation = 160;
+ 
+ 
+
         if (this.isAlreadyKnown()) { //rejects the conflict if its already tracked
             console.warn(`Duplicate conflict between ${this.aircraft[0].callsign} ` +
                 `and ${this.aircraft[1].callsign}! Scoring may be inaccurate!`);
@@ -53,6 +72,10 @@ export default class AircraftConflict {
         this._eventBus.trigger(EVENT.REMOVE_AIRCRAFT_CONFLICT, this);
     }
 
+    //returns the pair of aircrafts thar are in conflict
+    getConflictingAirCrafts(){
+        return this.aircraft;
+    }
     /**
      * Is there anything which should be brought to the controllers attention
      *
@@ -150,6 +173,8 @@ export default class AircraftConflict {
         // TODO: enumerate the magic numbers.
         // Collide within 160 feet
         const airport = AirportController.airport_get();
+        //pair of aircrafts have collided
+        //if horizontal distance between them < 0.05 and vertical distance betweem them < 160
 
         if (
             ((this.distance < 0.05) && (this.altitude < 160)) &&
@@ -167,6 +192,16 @@ export default class AircraftConflict {
             this.aircraft[0].hit = true;
             this.aircraft[1].hit = true;
         }
+    }
+
+
+    //returns a dictionary containing vertical and horizontal seperations
+
+    getSeperations(){
+        return {
+            "vertical": this.altitude,
+            "horizontal": this.distance
+        };
     }
 
     // TODO: this method is ripe for refactor. lots of logic that can be pulled out to
@@ -202,7 +237,8 @@ export default class AircraftConflict {
             if (runwayRelationship.parallel) {
                 // hide notices for aircraft on adjacent final approach courses
                 disableNotices = true;
-                applicableLatSepMin = runwayRelationship.separationMinimum;
+                //updated by a method in RunwayRelationshipModel
+                //applicableLatSepMin = runwayRelationship.separationMinimum;
             }
         }
 
@@ -211,7 +247,12 @@ export default class AircraftConflict {
         violation = this.distance < applicableLatSepMin;
         // TODO: enumerate the magic number.
         // TODO: this should be another class method
-        conflict = (this.distance < applicableLatSepMin + 1.852 && !disableNotices) || violation; // +1.0nm
+        //conflict = (this.distance < applicableLatSepMin + 1.852 && !disableNotices) || violation; // +1.0nm
+
+        //new formula
+        conflict = (this.distance < applicableLatSepMin && !disableNotices) || violation; // +1.0nm
+
+
 
         // "Passing & Diverging" Rules (the "exception" to all of the above rules)
         // test the below only if separation is currently considered insufficient
