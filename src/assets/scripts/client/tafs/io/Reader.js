@@ -1,4 +1,4 @@
-import { FLIGHT_PHASE } from "../../constants/aircraftConstants";
+import { FLIGHT_CATEGORY } from "../../constants/aircraftConstants";
 import { PROCEDURE_TYPE } from "../../constants/routeConstants";
 
 import FixCollection from "../../navigationLibrary/FixCollection";
@@ -28,7 +28,13 @@ export default class Reader {
 
     get_departure_aircrafts() {
         return this.get_all_aircrafts().filter(
-            (aircraft) => aircraft.flightPhase === FLIGHT_PHASE.APRON
+            (aircraft) => aircraft.category === FLIGHT_CATEGORY.DEPARTURE
+        );
+    }
+
+    get_arrival_aircrafts() {
+        return this.get_all_aircrafts().filter(
+            (aircraft) => aircraft.category === FLIGHT_CATEGORY.ARRIVAL
         );
     }
 
