@@ -22,6 +22,10 @@ export default class Reader {
         return NavigationLibrary.getProceduresByType(PROCEDURE_TYPE.SID);
     }
 
+    get_all_stars() {
+        return NavigationLibrary.getProceduresByType(PROCEDURE_TYPE.STAR);
+    }
+
     get_all_aircrafts() {
         return this.app_controller.aircraftController.aircraft.list;
     }
@@ -34,7 +38,9 @@ export default class Reader {
 
     get_arrival_aircrafts() {
         return this.get_all_aircrafts().filter(
-            (aircraft) => aircraft.category === FLIGHT_CATEGORY.ARRIVAL
+            (aircraft) =>
+                aircraft.category === FLIGHT_CATEGORY.ARRIVAL &&
+                aircraft.isControllable
         );
     }
 

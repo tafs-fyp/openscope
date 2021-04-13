@@ -97,7 +97,7 @@ class SIDModel {
         this.queue.shift();
 
         sim_writer.send_command(
-            `${aircraft.callsign} sid ${entry}.${this.sim_sid._icao}.${exit} caf`
+            `${aircraft.callsign} sid ${entry}.${this.sim_sid._icao}.${exit}`
         );
 
         sim_writer.send_command(`${aircraft.callsign} taxi ${runway}`);

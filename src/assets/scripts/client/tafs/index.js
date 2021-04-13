@@ -2,6 +2,7 @@ import Reader from "./io/Reader";
 import Writer from "./io/Writer";
 
 import DepartureManager from "./departure-manager";
+import ArrivalManager from "./arrival-manager";
 import Detector from "./conflict-detection/detector";
 
 export default class Agent {
@@ -18,6 +19,12 @@ export default class Agent {
             this.sim_reader,
             this.sim_writer,
             this.departure_runways
+        );
+
+        this.arrival_manager = new ArrivalManager(
+            this.sim_reader,
+            this.sim_writer,
+            this.arrival_runways
         );
 
         this.detector = new Detector(
@@ -61,6 +68,7 @@ export default class Agent {
 
     step() {
         this.departure_manager.step();
+        this.arrival_manager.step();
         this.detector.step();
     }
 }
