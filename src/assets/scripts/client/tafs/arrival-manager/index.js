@@ -4,9 +4,7 @@ import { distanceToPoint } from "../../math/circle";
 const AIRPORT_ICAO = "EDDH";
 
 function aircraft_flt_plan_end(aircraft) {
-    return _.last(
-        _.last(aircraft.fms._routeModel._legCollection)._waypointCollection
-    )._name.replace(/[\^@]/gi, "");
+    return _.last(aircraft.fms.waypoints)._name.replace(/[\^@]/gi, "");
 }
 
 class STARModel {
@@ -72,6 +70,18 @@ class STARModel {
         this.traffic += 1;
         this.flying.push([aircraft, entry, exit]);
     }
+
+    clear_ils(sim_writer) {
+        for (const [aircraft, _entry, exit] of this.flying) {
+            if (aircraft.fms.waypoints.length > 1) continue;
+
+            sim_writer.send_command(
+                `${aircraft.callsign} ils ${exit.replace(AIRPORT_ICAO, "")}`
+            );
+
+            this.traffic -= 1;
+        }
+    }
 }
 
 export default class ArrivalManager {
@@ -99,9 +109,10 @@ export default class ArrivalManager {
 
     assign_stars() {
         for (const aircraft of this.sim_reader.get_arrival_aircrafts()) {
-            if (_.defaultTo(this.star_assignments[aircraft.id], false)) return;
-            const flight_plan_end = aircraft_flt_plan_end(aircraft);
+            if (_.defaultTo(this.star_assignments[aircraft.id], false))
+                continue;
 
+            const flight_plan_end = aircraft_flt_plan_end(aircraft);
             const valid_stars = _.filter(this.available_stars, (star) =>
                 star.supports_entry_at(flight_plan_end)
             );
@@ -122,5 +133,8 @@ export default class ArrivalManager {
 
     step() {
         this.assign_stars();
+        for (const star of this.available_stars) {
+            star.clear_ils(this.sim_writer);
+        }
     }
 }

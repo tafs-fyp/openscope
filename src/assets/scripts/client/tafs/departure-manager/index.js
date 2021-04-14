@@ -9,10 +9,7 @@ const TAXI_TAKEOFF_DELAY = 20000;
 const runways_locked = {};
 
 function aircraft_flt_plan_start(aircraft) {
-    return aircraft.fms._routeModel._legCollection[0]._waypointCollection[0]._name.replace(
-        /[\^@]/gi,
-        ""
-    );
+    return aircraft.fms.waypoints[0]._name.replace(/[\^@]/gi, "");
 }
 
 class SIDModel {
@@ -140,7 +137,7 @@ export default class DepartureManager {
 
     assign_sids() {
         for (const aircraft of this.sim_reader.get_departure_aircrafts()) {
-            if (_.defaultTo(this.sid_assignments[aircraft.id], false)) return;
+            if (_.defaultTo(this.sid_assignments[aircraft.id], false)) continue;
             const flight_plan_start = aircraft_flt_plan_start(aircraft);
 
             const valid_sids = _.filter(this.available_sids, (sid) =>

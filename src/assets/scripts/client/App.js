@@ -183,8 +183,6 @@ export default class App {
             aircraftTypeDefinitionList,
             airportGuides
         );
-
-        this.tafs_agent = new Agent(this._appController);
         this.enable();
     }
 
@@ -326,7 +324,7 @@ export default class App {
     update() {
         if (!this.prop.complete) {
             this.complete();
-
+            this.tafs_agent = new Agent(this._appController);
             this.prop.complete = true;
         }
 
