@@ -1,4 +1,4 @@
-import _ from "lodash";
+import _, { indexOf } from "lodash";
 import { distanceToPoint } from "../../math/circle";
 
 const AIRPORT_ICAO = "EDDH";
@@ -72,15 +72,16 @@ class STARModel {
     }
 
     clear_ils(sim_writer) {
-        for (const [aircraft, _entry, exit] of this.flying) {
-            if (aircraft.fms.waypoints.length > 1) continue;
+        _.remove(this.flying, ([aircraft, _entry, exit]) => {
+            if (aircraft.fms.waypoints.length > 1) return false;
 
             sim_writer.send_command(
                 `${aircraft.callsign} ils ${exit.replace(AIRPORT_ICAO, "")}`
             );
 
             this.traffic -= 1;
-        }
+            return true;
+        });
     }
 }
 
