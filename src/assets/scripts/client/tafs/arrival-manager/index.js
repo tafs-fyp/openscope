@@ -2,9 +2,25 @@ import _, { indexOf } from "lodash";
 import { distanceToPoint } from "../../math/circle";
 
 const AIRPORT_ICAO = "EDDH";
+const ARRIVAL_ALT_MIN = 20;
+const ARRIVAL_ALT_MAX = 40;
+const ARRIVAL_ALT_STEP = 10;
 
 function aircraft_flt_plan_end(aircraft) {
     return _.last(aircraft.fms.waypoints)._name.replace(/[\^@]/gi, "");
+}
+
+function calc_path_distance(path, fixes) {
+    let total = 0;
+    for (let i = 0; i < path.length - 1; i++) {
+        total += distanceToPoint(
+            fixes[path[i]][0],
+            fixes[path[i]][1],
+            fixes[path[i + 1]][0],
+            fixes[path[i + 1]][1]
+        );
+    }
+    return total;
 }
 
 class STARModel {
@@ -18,28 +34,13 @@ class STARModel {
     }
 
     calc_star_distance() {
-        let total = 0,
-            path = this.sim_star._body;
-
-        for (let i = 0; i < path.length - 1; i++) {
-            const first_wp = (Array.isArray(path[i])
-                ? path[i][0]
-                : path[i]
-            ).replace(/[\^@]/gi, "");
-
-            const second_wp = (Array.isArray(path[i + 1])
-                ? path[i + 1][0]
-                : path[i + 1]
-            ).replace(/[\^@]/gi, "");
-
-            total += distanceToPoint(
-                this.fixes[first_wp][0],
-                this.fixes[first_wp][1],
-                this.fixes[second_wp][0],
-                this.fixes[second_wp][1]
-            );
-        }
-        return total;
+        const path = _.map(this.sim_star._body, (waypoint) =>
+            (Array.isArray(waypoint) ? waypoint[0] : waypoint).replace(
+                /[\^@]/gi,
+                ""
+            )
+        );
+        return calc_path_distance(path, this.fixes);
     }
 
     get_supported_runways() {
@@ -65,6 +66,16 @@ class STARModel {
         sim_writer.send_command(
             `${aircraft.callsign} route ${entry}.${this.sim_star._icao}.${exit}`
         );
+
+        // DO NOT DELETE
+        // sim_writer.send_command(
+        //     `${aircraft.callsign} dvs ${
+        //         _.random(
+        //             ARRIVAL_ALT_MIN / ARRIVAL_ALT_STEP,
+        //             ARRIVAL_ALT_MAX / ARRIVAL_ALT_STEP
+        //         ) * ARRIVAL_ALT_STEP
+        //     }`
+        // );
         sim_writer.send_command(`${aircraft.callsign} dvs 20`);
 
         this.traffic += 1;
@@ -72,6 +83,35 @@ class STARModel {
     }
 
     clear_ils(sim_writer) {
+        // DO NOT DELETE
+        // _.remove(this.flying, ([aircraft, _entry, exit]) => {
+        //     if (
+        //         aircraft.fms.waypoints.length === 1 &&
+        //         aircraft.altitude === ARRIVAL_ALT_MIN * 100
+        //     ) {
+        //         sim_writer.send_command(
+        //             `${aircraft.callsign} ils ${exit.replace(AIRPORT_ICAO, "")}`
+        //         );
+
+        //         this.traffic -= 1;
+        //         return true;
+        //     }
+
+        //     if (aircraft.mcp.altitude === ARRIVAL_ALT_MIN * 100) return false;
+
+        //     const rem_path = _.map(
+        //         aircraft.fms.waypoints,
+        //         (waypoint) => waypoint.name
+        //     );
+        //     const rem_distance = calc_path_distance(rem_path, this.fixes);
+
+        //     if (rem_distance < DESCEND_FOR_ILS_DISTANCE) {
+        //         sim_writer.send_command(
+        //             `${aircraft.callsign} dvs ${ARRIVAL_ALT_MIN}`
+        //         );
+        //     }
+        //     return false;
+        // });
         _.remove(this.flying, ([aircraft, _entry, exit]) => {
             if (aircraft.fms.waypoints.length > 1) return false;
 

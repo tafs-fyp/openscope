@@ -6,10 +6,27 @@ const SID_TIME_DELAY = 90000;
 const RUNWAY_TIME_DELAY = 90000;
 const TAXI_TAKEOFF_DELAY = 20000;
 
+const DEPARTURE_ALT_MIN = 80;
+const DEPARTURE_ALT_MAX = 100;
+const DEPARTURE_ALT_STEP = 10;
+
 const runways_locked = {};
 
 function aircraft_flt_plan_start(aircraft) {
     return aircraft.fms.waypoints[0]._name.replace(/[\^@]/gi, "");
+}
+
+function calc_path_distance(path, fixes) {
+    let total = 0;
+    for (let i = 0; i < path.length - 1; i++) {
+        total += distanceToPoint(
+            fixes[path[i]][0],
+            fixes[path[i]][1],
+            fixes[path[i + 1]][0],
+            fixes[path[i + 1]][1]
+        );
+    }
+    return total;
 }
 
 class SIDModel {
@@ -26,28 +43,13 @@ class SIDModel {
     }
 
     calc_sid_distance() {
-        let total = 0,
-            path = this.sim_sid._body;
-
-        for (let i = 0; i < path.length - 1; i++) {
-            const first_wp = (Array.isArray(path[i])
-                ? path[i][0]
-                : path[i]
-            ).replace(/[\^@]/gi, "");
-
-            const second_wp = (Array.isArray(path[i + 1])
-                ? path[i + 1][0]
-                : path[i + 1]
-            ).replace(/[\^@]/gi, "");
-
-            total += distanceToPoint(
-                this.fixes[first_wp][0],
-                this.fixes[first_wp][1],
-                this.fixes[second_wp][0],
-                this.fixes[second_wp][1]
-            );
-        }
-        return total;
+        const path = _.map(this.sim_sid._body, (waypoint) =>
+            (Array.isArray(waypoint) ? waypoint[0] : waypoint).replace(
+                /[\^@]/gi,
+                ""
+            )
+        );
+        return calc_path_distance(path, this.fixes);
     }
 
     get_supported_runways() {
@@ -100,7 +102,14 @@ class SIDModel {
         sim_writer.send_command(`${aircraft.callsign} taxi ${runway}`);
 
         setTimeout(() => {
-            sim_writer.send_command(`${aircraft.callsign} takeoff cvs`);
+            sim_writer.send_command(
+                `${aircraft.callsign} takeoff cvs ${
+                    _.random(
+                        DEPARTURE_ALT_MIN / DEPARTURE_ALT_STEP,
+                        DEPARTURE_ALT_MAX / DEPARTURE_ALT_STEP
+                    ) * DEPARTURE_ALT_STEP
+                }`
+            );
             this.flying.push(aircraft);
 
             runways_locked[runway] = new Date();
