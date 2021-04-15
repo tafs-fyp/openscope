@@ -13,6 +13,7 @@ function aircraft_flt_plan_start(aircraft) {
 }
 
 class SIDModel {
+
     constructor(sim_sid, fixes) {
         this.fixes = fixes;
         this.sim_sid = sim_sid;
@@ -26,6 +27,7 @@ class SIDModel {
     }
 
     calc_sid_distance() {
+
         let total = 0,
             path = this.sim_sid._body;
 
@@ -113,6 +115,7 @@ class SIDModel {
 }
 
 export default class DepartureManager {
+    
     constructor(sim_reader, sim_writer, departure_runways) {
         this.sim_reader = sim_reader;
         this.sim_writer = sim_writer;
@@ -136,6 +139,7 @@ export default class DepartureManager {
     }
 
     assign_sids() {
+
         for (const aircraft of this.sim_reader.get_departure_aircrafts()) {
             if (_.defaultTo(this.sid_assignments[aircraft.id], false)) continue;
             const flight_plan_start = aircraft_flt_plan_start(aircraft);

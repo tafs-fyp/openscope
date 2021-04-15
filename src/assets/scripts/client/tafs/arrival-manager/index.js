@@ -7,6 +7,8 @@ function aircraft_flt_plan_end(aircraft) {
     return _.last(aircraft.fms.waypoints)._name.replace(/[\^@]/gi, "");
 }
 
+
+
 class STARModel {
     constructor(sim_star, fixes) {
         this.fixes = fixes;
