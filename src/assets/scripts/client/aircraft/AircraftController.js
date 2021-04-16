@@ -110,6 +110,7 @@ export default class AircraftController {
         this.aircraft.list = [];
         this.aircraft.auto = { enabled: false };
         this.conflicts = [];
+        this.aircrafts_collided = [];
 
         /**
          * Instance of the `StripViewController`
@@ -483,9 +484,15 @@ export default class AircraftController {
         conflict.aircraft[0].removeConflict(conflict.aircraft[1]);
         conflict.aircraft[1].removeConflict(conflict.aircraft[0]);
 
+        if(conflict.collided){
+            this.aircrafts_collided.push(conflict);
+        }
+
         this.conflicts = _without(this.conflicts, conflict);
     };
-
+    getCollidedAirCrafts() { 
+        return this.aircrafts_collided;
+    }
     /**
      * Remove any conflicts that involve the specified aircraft
      *
@@ -766,7 +773,7 @@ export default class AircraftController {
         const boundingBoxLength = km(8);
         const dx = abs(aircraftModel.relativePosition[0] - comparisonAircraftModel.relativePosition[0]);
         const dy = abs(aircraftModel.relativePosition[1] - comparisonAircraftModel.relativePosition[1]);
-
+        
         return dx < boundingBoxLength && dy < boundingBoxLength;
     }
 
