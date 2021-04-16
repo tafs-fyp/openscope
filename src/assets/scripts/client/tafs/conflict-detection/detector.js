@@ -16,11 +16,11 @@ export const ConflitCategories = {
  
 
 export default class Detector {
-    constructor(aircraftController,reader) {
+    constructor(aircraftController,reader,sidconfresolver) {
         this.aircraftcontroller = aircraftController;
         this.sim_reader = reader;
         this.aircrafts = this.sim_reader.get_all_aircrafts();
-
+        this.sidsidresolver = sidconfresolver;
         this.count = 0; //how many conflicts were detected
     }
 
@@ -61,9 +61,11 @@ export default class Detector {
 
         
         let conflicts = this.aircraftcontroller.getConflicts();
+        let collidedAirCrafts = this.aircraftcontroller.getCollidedAirCrafts();
+
         this.count += conflicts.length;
-        console.log(`waypoints of ${this.aircrafts[0].getCallsign()} are `);
-        console.log(this.aircrafts[0].fms.waypoints[0]._name);
+        // console.log(`waypoints of ${this.aircrafts[0].getCallsign()} are `);
+        // console.log(this.aircrafts[0].fms.waypoints[0]._name);
         
         if(conflicts.length > 0){
             let sidconflicts     =  this.getConflictsFor(conflicts,this.sim_reader.get_departure_aircrafts(),ConflitCategories.SIDSID);
@@ -72,38 +74,49 @@ export default class Detector {
 
             if(sidconflicts.length > 0){
                 //ask sid resolver to resolve
+                
+                //this.sidsidresolver.step(sidconflicts,ConflitCategories.SIDSID);
             }
             if(starconflicts.length>0){
-                //ask star resolver to resolve
-                var i = 0;
-                for(i = 0; i < starconflicts.length; i++ )
-                {
-                    // console.log(starconflicts[i]);
-                    var j = 0;
-                    for(j = 0; j < starconflicts.length; j++){
-                        let allstarcrafts = this.sim_reader.get_arrival_aircrafts();
-                        var k = 0;
-                        for(k = 0; k < allstarcrafts.length; k++)
-                        {
-                            if(starconflicts[i].first === allstarcrafts[k].getCallsign())
-                            {
-                                console.log("First Current Altitude: "+allstarcrafts[k].altitude);
-                            }
-                            if(starconflicts[i].second === allstarcrafts[k].getCallsign())
-                            {
-                                // console.log(`last waypoint of ${allstarcrafts[k].getCallsign()} === ${_.last(allstarcrafts[k].fms.waypoints) }`);
-                            }
-
-                        }
-                    }
-                }
+                // console.log("STAR conflicts detected: "+sidconflicts.length);
+                console.log("STAR CONFLICT DETECTED");
+                this.sidsidresolver.step(starconflicts,ConflitCategories.STARSTAR);
             }
             if(sidstarconflicts.length > 0){
-                //ask sidstar resolver to resolve
+
             }
+
         }
    
     }
    
 }
 
+            // if(starconflicts.length>0){
+            //     //ask star resolver to resolve
+            //     var i = 0;
+            //     for(i = 0; i < starconflicts.length; i++ )
+            //     {
+            //         // console.log(starconflicts[i]);
+            //         var j = 0;
+            //         for(j = 0; j < starconflicts.length; j++){
+            //             let allstarcrafts = this.sim_reader.get_arrival_aircrafts();
+            //             var k = 0;
+            //             for(k = 0; k < allstarcrafts.length; k++)
+            //             {
+            //                 if(starconflicts[i].first === allstarcrafts[k].getCallsign())
+            //                 {
+            //                     console.log("First Current Altitude: "+allstarcrafts[k].altitude);
+            //                 }
+            //                 if(starconflicts[i].second === allstarcrafts[k].getCallsign())
+            //                 {
+            //                     // console.log(`last waypoint of ${allstarcrafts[k].getCallsign()} === ${_.last(allstarcrafts[k].fms.waypoints) }`);
+            //                 }
+
+            //             }
+            //         }
+            //     }
+            // }
+            // if(sidstarconflicts.length > 0){
+            //     //ask sidstar resolver to resolve
+            // }
