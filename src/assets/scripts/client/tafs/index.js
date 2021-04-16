@@ -28,12 +28,12 @@ export default class Agent {
         );
 
         this.detector = new Detector(
-            this.app_controller.getAircraftController(),this.sim_reader
+            this.app_controller.getAircraftController(),
+            this.sim_reader
         );
 
-        //setInterval(this.step.bind(this), 10000);
-        setInterval(this.detectorAndResolverStep.bind(this),1000);
-        
+        setInterval(this.step.bind(this), 10000);
+        // setInterval(this.detectorAndResolverStep.bind(this), 1000);
     }
 
     choose_runways(dep_num = 1, arr_num = 1) {
@@ -74,8 +74,7 @@ export default class Agent {
         // this.detector.step();
     }
 
-    detectorAndResolverStep()
-    {
+    detectorAndResolverStep() {
         this.detector.step();
     }
 }

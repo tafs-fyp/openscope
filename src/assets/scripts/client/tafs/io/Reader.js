@@ -5,9 +5,6 @@ import FixCollection from "../../navigationLibrary/FixCollection";
 import NavigationLibrary from "../../navigationLibrary/NavigationLibrary";
 import AirportController from "../../airport/AirportController";
 
-
-
-
 export default class Reader {
     constructor(app_controller) {
         this.app_controller = app_controller;
@@ -54,5 +51,4 @@ export default class Reader {
     get_wind() {
         return AirportController.airport_get().getWindAtAltitude();
     }
-
 }

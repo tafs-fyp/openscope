@@ -1,4 +1,4 @@
-import _, { indexOf } from "lodash";
+import _ from "lodash";
 import { distanceToPoint } from "../../math/circle";
 
 const AIRPORT_ICAO = "EDDH";
@@ -22,7 +22,6 @@ function calc_path_distance(path, fixes) {
     }
     return total;
 }
-
 
 class STARModel {
     constructor(sim_star, fixes) {
