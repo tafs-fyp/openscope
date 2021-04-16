@@ -4,8 +4,7 @@
 
 // const SPEEDINCREMENT    = 25;      //we will increment the speed by 25 knots.
 // const ALTITUDEINCREMENT = 1000;    //altitude increment factor
-// const TIMESTAMP         = 20;      //Time in seconds before taking other action
-
+// const TIMESTAMP         = 15;      //Time in seconds before taking other action
 // const Resolutions = {
 //     Altitude:       1,
 //     Speed:          2,
@@ -248,7 +247,7 @@
 //                     `${key} exithold`
 //                 );
 //                 delete this.holdingAirCrafts[key];
-//                 console.log(`${key} has been instructed to exit hold`);
+//                 console.log(`${key} has been instructed to hold arround ${lastwp}`);
 //             }
 //         }
 //     }
