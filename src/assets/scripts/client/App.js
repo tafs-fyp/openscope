@@ -7,6 +7,9 @@ import { DEFAULT_AIRPORT_ICAO } from './constants/airportConstants';
 import { EVENT } from './constants/eventNames';
 import { LOG } from './constants/logLevel';
 
+// DO NOT DELETE
+// import AirportController from './airport/AirportController';
+
 window.zlsa = {};
 window.zlsa.atc = {};
 
@@ -324,6 +327,26 @@ export default class App {
     update() {
         if (!this.prop.complete) {
             this.complete();
+
+            // DO NOTE DELETE
+            // $.ajax({
+            //     type: "GET",
+            //     url:
+            //         "https://avwx.rest/api/metar/EDDH?token=I1EJsOfi-mz9564xiDhwdjo1CK1P2cPiYVK8CA2aOzE",
+            //     success: (data, status) => {
+            //         if (status == "success") {
+            //             const wind = {
+            //                 angle: data.wind_direction.value,
+            //                 speed: data.wind_speed.value,
+            //             };
+
+            //             AirportController.airport_get().updateCurrentWind(wind);
+            //             this._appController.airportInfoController.onAirportChange();
+            //             this.tafs_agent = new Agent(this._appController);
+            //         }
+            //     },
+            // });
+
             this.tafs_agent = new Agent(this._appController);
             this.prop.complete = true;
         }
