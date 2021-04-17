@@ -6,57 +6,49 @@
 */
 
 import _ from "lodash";
+import { FLIGHT_CATEGORY } from "../../constants/aircraftConstants";
 
-export const ConflitCategories = {
+export const CONFLICT_CATEGORIES = {
     SIDSID: 1,
     STARSTAR: 2,
     SIDSTAR: 3,
 };
 
 export default class Detector {
-    constructor(aircraftController, reader, sidconfresolver) {
+    constructor(aircraftController, reader, conflict_resolver) {
         this.aircraftcontroller = aircraftController;
         this.sim_reader = reader;
-        this.aircrafts = this.sim_reader.get_all_aircrafts();
-        this.sidsidresolver = sidconfresolver;
-        this.count = 0; //how many conflicts were detected
+        this.conflict_resolver = conflict_resolver;
     }
 
-    doesAircraftExist(aircaft, elements) {
-        var i = 0;
-        for (i = 0; i < elements.length; i++) {
-            if (aircaft["callsign"] === elements[i].getCallsign()) {
-                return true;
-            }
-        }
-        return false;
-    }
+    getConflictsFor(allconflicts, category) {
+        const conflicts = _.filter(allconflicts, (conflict) => {
+            const [first, second] = conflict.getConflictingAirCrafts();
 
-    getConflictsFor(allconflicts, lookup, catergory) {
-        let conflicts = [];
-        var i = 0;
-        for (i = 0; i < allconflicts.length; i++) {
-            let seperations = allconflicts[i].getSeperations();
-            let first = allconflicts[i]
-                .getConflictingAirCrafts()[0]
-                .getInformation();
-            let second = allconflicts[i]
-                .getConflictingAirCrafts()[1]
-                .getInformation();
-            if (
-                this.doesAircraftExist(first, lookup) &&
-                this.doesAircraftExist(second, lookup)
-            ) {
-                conflicts.push({
-                    first: first["callsign"],
-                    second: second["callsign"],
-                    vertical: seperations["vertical"],
-                    horizontal: seperations["horizontal"],
-                    nature: catergory,
-                });
-            }
-        }
-        return conflicts;
+            if (category === CONFLICT_CATEGORIES.SIDSID)
+                return (
+                    first.category === FLIGHT_CATEGORY.DEPARTURE &&
+                    second.category === FLIGHT_CATEGORY.DEPARTURE
+                );
+            else if (category === CONFLICT_CATEGORIES.STARSTAR)
+                return (
+                    first.category === FLIGHT_CATEGORY.ARRIVAL &&
+                    second.category === FLIGHT_CATEGORY.ARRIVAL
+                );
+            else return first.category !== second.category;
+        });
+
+        return _.map(conflicts, (conflict) => {
+            const separations = conflict.getSeperations();
+            const [first, second] = conflict.getConflictingAirCrafts();
+            return {
+                first: first.callsign,
+                second: second.callsign,
+                vertical: separations.vertical,
+                horizontal: separations.horizontal,
+                nature: category,
+            };
+        });
     }
 
     step() {
@@ -65,37 +57,32 @@ export default class Detector {
         if (collidedAirCrafts.length > 0) {
             console.log("Total Collisions: " + collidedAirCrafts.length);
         }
-        this.count += conflicts.length;
-        // console.log(`waypoints of ${this.aircrafts[0].getCallsign()} are `);
-        // console.log(this.aircrafts[0].fms.waypoints[0]._name);
 
         if (conflicts.length > 0) {
             let sidconflicts = this.getConflictsFor(
                 conflicts,
-                this.sim_reader.get_departure_aircrafts(),
-                ConflitCategories.SIDSID
+                CONFLICT_CATEGORIES.SIDSID
             );
             let starconflicts = this.getConflictsFor(
                 conflicts,
-                this.sim_reader.get_arrival_aircrafts(),
-                ConflitCategories.STARSTAR
+                CONFLICT_CATEGORIES.STARSTAR
             );
             let sidstarconflicts = this.getConflictsFor(
                 conflicts,
-                this.sim_reader.get_all_aircrafts(),
-                ConflitCategories.SIDSTAR
+                CONFLICT_CATEGORIES.SIDSTAR
             );
 
             if (sidconflicts.length > 0) {
                 //ask sid resolver to resolve
-                //this.sidsidresolver.step(sidconflicts,ConflitCategories.SIDSID);
+                //this.conflict_resolver.step(sidconflicts,CONFLICT_CATEGORIES.SIDSID);
             }
             if (starconflicts.length > 0) {
                 // console.log("STAR conflicts detected: "+sidconflicts.length);
-                console.log("STAR CONFLICT DETECTED");
-                this.sidsidresolver.step(
+                console.log("STAR CONFLICTS DETECTED");
+                console.log(starconflicts);
+                this.conflict_resolver.step(
                     starconflicts,
-                    ConflitCategories.STARSTAR
+                    CONFLICT_CATEGORIES.STARSTAR
                 );
             }
             if (sidstarconflicts.length > 0) {

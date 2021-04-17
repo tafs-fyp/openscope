@@ -490,9 +490,17 @@ export default class AircraftController {
 
         this.conflicts = _without(this.conflicts, conflict);
     };
+
+    /**
+     * Get all conflicts which ended with a collision.
+     *
+     * @for AircraftController
+     * @method getCollidedAirCrafts
+     */
     getCollidedAirCrafts() { 
         return this.aircrafts_collided;
     }
+
     /**
      * Remove any conflicts that involve the specified aircraft
      *

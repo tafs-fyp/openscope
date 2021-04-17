@@ -2713,7 +2713,7 @@ export default class AircraftModel {
             "id":this.id,
             "airline" :this.airlineId,
             "flightNumber" : this.flightNumber,
-            "callsign" : `${this.airlineId.toUpperCase()}${this.flightNumber.toUpperCase()}`
+            "callsign" : this.callsign
         };
     }
 

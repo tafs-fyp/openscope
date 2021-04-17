@@ -64,11 +64,6 @@ export default class AppController {
             .setupHandlers()
             .enable();
     }
- 
-    //returns AirCraftController
-    getAircraftController(){
-        return this.aircraftController;
-    }
 
     /**
      * @for AppController

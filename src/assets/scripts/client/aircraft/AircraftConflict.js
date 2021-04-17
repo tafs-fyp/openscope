@@ -194,9 +194,12 @@ export default class AircraftConflict {
         }
     }
 
-
-    //returns a dictionary containing vertical and horizontal seperations
-
+    /**
+     * Returns a dictionary containing vertical and horizontal seperations
+     *
+     * @for AircraftConflict
+     * @method getSeperations
+     */
     getSeperations(){
         return {
             "vertical": this.altitude,

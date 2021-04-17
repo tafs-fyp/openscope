@@ -28,20 +28,20 @@ export default class Agent {
             this.arrival_runways
         );
 
-        this.sidsidresolver = new ConflictResolution(
+        this.conflict_resolver = new ConflictResolution(
             this.sim_reader,
             this.sim_writer,
             5
         );
 
         this.detector = new Detector(
-            this.app_controller.getAircraftController(),
+            this.app_controller.aircraftController,
             this.sim_reader,
-            this.sidsidresolver
+            this.conflict_resolver
         );
+
         setInterval(this.step.bind(this), 10000);
-        setInterval(this.detectorAndResolverStep.bind(this), 5000);
-        setInterval(this.logAnalytics.bind(this), 10000);
+        setInterval(this.resolver_step.bind(this), 5000);
     }
 
     choose_runways(dep_num = 1, arr_num = 1) {
@@ -79,14 +79,10 @@ export default class Agent {
     step() {
         this.departure_manager.step();
         this.arrival_manager.step();
+        // this.conflict_resolver.logAnalytics();
     }
 
-    detectorAndResolverStep() {
-        //this.sidsidresolver.updateOldResolutions();
+    resolver_step() {
         this.detector.step();
-    }
-
-    logAnalytics() {
-        this.sidsidresolver.logAnalytics();
     }
 }
