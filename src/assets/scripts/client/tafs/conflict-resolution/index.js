@@ -326,10 +326,49 @@ export default class ConflictResolution {
             }
         }
     }
+    criticalConflicts(conflicts) {
+        for (const con in conflicts) {
+            if (con.vertical <= 0.5 && con.horizontal <= 0.5) {
+                //critial conflicts
+                const aircraft1 = this.getAirCraftModel(con.first);
+                const aircraft2 = this.getAirCraftModel(con.second);
+                const first_rem_path = _.map(
+                    aircraft1.fms.waypoints,
+                    (waypoint) => waypoint.name
+                );
+                const second_rem_path = _.map(
+                    aircraft2.fms.waypoints,
+                    (waypoint) => waypoint.name
+                );
 
+                const first_distance = calc_path_distance(
+                    first_rem_path,
+                    this.fixes
+                );
+                const second_distance = calc_path_distance(
+                    second_rem_path,
+                    this.fixes
+                );
+                const targetCallsign =
+                    first_distance >= second_distance
+                        ? conflict.first
+                        : conflict.second;
+                const newalt = Math.floor(
+                    (this.getCurrentAltitude(targetCallsign) + 1000) / 100
+                );
+                this.sim_writer.send_command(
+                    `${targetCallsign} climb ${newalt}`
+                );
+                console.log(
+                    `Resolved a critical conflict for ${targetCallsign}`
+                );
+            }
+        }
+    }
     step(conflicts, category) {
         this.updateOldResolutions();
         this.updateConflicts(conflicts);
+        this.criticalConflicts(conflicts);
         for (const con of conflicts) {
             const id = this.getID(con);
             if (id in this.resolutionsMade) {
