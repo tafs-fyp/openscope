@@ -76,12 +76,9 @@ export default class Detector {
             );
 
             if (sidconflicts.length > 0) {
-                //ask sid resolver to resolve
                 //this.conflict_resolver.step(sidconflicts,CONFLICT_CATEGORIES.SIDSID);
             }
             if (starconflicts.length > 0) {
-                // console.log("STAR conflicts detected: "+sidconflicts.length);
-                console.log("STAR CONFLICTS DETECTED");
                 this.conflict_resolver.step_starstar(starconflicts);
             }
             if (sidstarconflicts.length > 0) {

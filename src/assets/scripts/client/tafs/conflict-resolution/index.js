@@ -172,9 +172,12 @@ export default class ConflictResolution {
                     conflict: conflict,
                     callsign: callsign,
                     instruction: RESOLUTIONS.ALTITUDE,
-                    altitude: 1100,
+                    altitude: 1700,
                     timestamp: RESOLUTION_TIME,
                 };
+                console.log(
+                    `${callsign} has been instructed to descend to FL17`
+                );
             } else {
                 const new_altitude = (model.altitude + ALTITUTDE_CHANGE) / 100;
                 this.sim_writer.send_command(
@@ -188,6 +191,9 @@ export default class ConflictResolution {
                     holding_fix: fix,
                     timestamp: RESOLUTION_TIME * 2,
                 };
+                console.log(
+                    `${callsign} has been instructed to hold at ${fix}`
+                );
             }
         } else if (instruction === RESOLUTIONS.SPEED) {
             const new_speed = model.speed - SPEED_CHANGE;
@@ -200,6 +206,9 @@ export default class ConflictResolution {
                     speed: new_speed,
                     timestamp: RESOLUTION_TIME,
                 };
+                console.log(
+                    `${callsign} has been instructed to reduce speed by 25KTS`
+                );
             }
         }
     }
@@ -229,6 +238,11 @@ export default class ConflictResolution {
                     resolution.timestamp = RESOLUTION_TIME;
                 else {
                     if (resolution.instruction == RESOLUTIONS.HOLDING_PATTERN) {
+                        if (!instructed_model.isControllable) {
+                            resolution.timestamp = 15;
+                            continue;
+                        }
+
                         let dvs_cmd = "";
                         if (instructed_model.altitude > 2000)
                             dvs_cmd = "dvs 20";
@@ -288,6 +302,9 @@ export default class ConflictResolution {
         this.update_resolutions();
         this.handle_critical_conflicts_starstar(conflicts);
         for (const conflict of conflicts) {
+            console.log(
+                `Conflict between ${conflict.first} and ${conflict.second}`
+            );
             this.enact_resolution_starstar(conflict);
         }
     }
