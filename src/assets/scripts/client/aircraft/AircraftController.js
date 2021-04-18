@@ -485,6 +485,8 @@ export default class AircraftController {
         conflict.aircraft[1].removeConflict(conflict.aircraft[0]);
 
         if(conflict.collided){
+            console.log('COLLISION');
+            console.log(conflict);
             this.aircrafts_collided.push(conflict);
         }
 

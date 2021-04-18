@@ -288,7 +288,7 @@ export const SEPARATION = {
      * @type {number}
      * @final
      */
-    STANDARD_LATERAL_KM: 2*5.556, // 2*3nm
+    STANDARD_LATERAL_KM: 5.556, // 3nm
     /**
      * Minimum vertical separation in feet
      *

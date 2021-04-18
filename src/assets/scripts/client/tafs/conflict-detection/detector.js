@@ -25,6 +25,9 @@ export default class Detector {
         const conflicts = _.filter(allconflicts, (conflict) => {
             const [first, second] = conflict.getConflictingAirCrafts();
 
+            const separations = conflict.getSeperations();
+            if (separations.horizontal > 6) return false;
+
             if (category === CONFLICT_CATEGORIES.SIDSID)
                 return (
                     first.category === FLIGHT_CATEGORY.DEPARTURE &&
@@ -79,43 +82,10 @@ export default class Detector {
             if (starconflicts.length > 0) {
                 // console.log("STAR conflicts detected: "+sidconflicts.length);
                 console.log("STAR CONFLICTS DETECTED");
-                console.log(starconflicts);
-                this.conflict_resolver.step(
-                    starconflicts,
-                    CONFLICT_CATEGORIES.STARSTAR
-                );
+                this.conflict_resolver.step_starstar(starconflicts);
             }
             if (sidstarconflicts.length > 0) {
             }
         }
     }
 }
-
-// if(starconflicts.length>0){
-//     //ask star resolver to resolve
-//     var i = 0;
-//     for(i = 0; i < starconflicts.length; i++ )
-//     {
-//         // console.log(starconflicts[i]);
-//         var j = 0;
-//         for(j = 0; j < starconflicts.length; j++){
-//             let allstarcrafts = this.sim_reader.get_arrival_aircrafts();
-//             var k = 0;
-//             for(k = 0; k < allstarcrafts.length; k++)
-//             {
-//                 if(starconflicts[i].first === allstarcrafts[k].getCallsign())
-//                 {
-//                     console.log("First Current Altitude: "+allstarcrafts[k].altitude);
-//                 }
-//                 if(starconflicts[i].second === allstarcrafts[k].getCallsign())
-//                 {
-//                     // console.log(`last waypoint of ${allstarcrafts[k].getCallsign()} === ${_.last(allstarcrafts[k].fms.waypoints) }`);
-//                 }
-
-//             }
-//         }
-//     }
-// }
-// if(sidstarconflicts.length > 0){
-//     //ask sidstar resolver to resolve
-// }

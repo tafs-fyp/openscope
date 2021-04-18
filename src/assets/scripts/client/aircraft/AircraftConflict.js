@@ -1,16 +1,16 @@
-import _includes from 'lodash/includes';
-import _filter from 'lodash/filter';
-import AirportController from '../airport/AirportController';
-import EventBus from '../lib/EventBus';
-import GameController, { GAME_EVENTS } from '../game/GameController';
-import TimeKeeper from '../engine/TimeKeeper';
-import UiController from '../ui/UiController';
-import { abs } from '../math/core';
-import { angle_offset } from '../math/circle';
-import { vlen, vsub, vturn } from '../math/vector';
-import { degreesToRadians } from '../utilities/unitConverters';
-import { SEPARATION } from '../constants/aircraftConstants';
-import { EVENT } from '../constants/eventNames';
+import _includes from "lodash/includes";
+import _filter from "lodash/filter";
+import AirportController from "../airport/AirportController";
+import EventBus from "../lib/EventBus";
+import GameController, { GAME_EVENTS } from "../game/GameController";
+import TimeKeeper from "../engine/TimeKeeper";
+import UiController from "../ui/UiController";
+import { abs } from "../math/core";
+import { angle_offset } from "../math/circle";
+import { vlen, vsub, vturn } from "../math/vector";
+import { degreesToRadians } from "../utilities/unitConverters";
+import { SEPARATION } from "../constants/aircraftConstants";
+import { EVENT } from "../constants/eventNames";
 
 /**
  * Details about aircraft in close proximity in relation to 'the rules'
@@ -18,14 +18,15 @@ import { EVENT } from '../constants/eventNames';
  * @class AircraftConflict
  */
 export default class AircraftConflict {
-
     //receives two aircrafts and detects conflicts among them
     constructor(first, second) {
         this._eventBus = EventBus;
 
         this.aircraft = [first, second];
         //distance between them (horizontal)
-        this.distance = vlen(vsub(first.relativePosition, second.relativePosition));
+        this.distance = vlen(
+            vsub(first.relativePosition, second.relativePosition)
+        );
         this.distance_delta = 0;
         //vertical distance betweem them
         this.altitude = abs(first.altitude - second.altitude);
@@ -34,28 +35,12 @@ export default class AircraftConflict {
         this.conflicts = {};
         this.violations = {};
 
-
-        /**
-         * minimum horizontal seperation allowed b/w aircrafts 
-         *
-         * @type {int}
-         * @default 5
-         */
-         this.min_horizontal_seperation = 5;
-
-         /**
-          * minimum version seperation allowed b/w aircrafts
-          *
-          * @type {int}
-          * @default 160
-          */
-          this.min_vertical_seperation = 160;
- 
- 
-
-        if (this.isAlreadyKnown()) { //rejects the conflict if its already tracked
-            console.warn(`Duplicate conflict between ${this.aircraft[0].callsign} ` +
-                `and ${this.aircraft[1].callsign}! Scoring may be inaccurate!`);
+        if (this.isAlreadyKnown()) {
+            //rejects the conflict if its already tracked
+            console.warn(
+                `Duplicate conflict between ${this.aircraft[0].callsign} ` +
+                    `and ${this.aircraft[1].callsign}! Scoring may be inaccurate!`
+            );
             return;
         }
 
@@ -73,7 +58,7 @@ export default class AircraftConflict {
     }
 
     //returns the pair of aircrafts thar are in conflict
-    getConflictingAirCrafts(){
+    getConflictingAirCrafts() {
         return this.aircraft;
     }
     /**
@@ -121,9 +106,16 @@ export default class AircraftConflict {
      */
     _recalculateLateralAndVerticalDistances() {
         const distanceAtLastUpdate = this.distance;
-        this.distance = vlen(vsub(this.aircraft[0].relativePosition, this.aircraft[1].relativePosition));
+        this.distance = vlen(
+            vsub(
+                this.aircraft[0].relativePosition,
+                this.aircraft[1].relativePosition
+            )
+        );
         this.distance_delta = this.distance - distanceAtLastUpdate;
-        this.altitude = abs(this.aircraft[0].altitude - this.aircraft[1].altitude);
+        this.altitude = abs(
+            this.aircraft[0].altitude - this.aircraft[1].altitude
+        );
     }
 
     /**
@@ -147,15 +139,19 @@ export default class AircraftConflict {
         // Ignore aircraft below about 1000 feet
         const airportElevation = AirportController.airport_get().elevation;
         const gameTime = TimeKeeper.accumulatedDeltaTime;
-        if (((this.aircraft[0].altitude - airportElevation) < 990) ||
-            ((this.aircraft[1].altitude - airportElevation) < 990)) {
+        if (
+            this.aircraft[0].altitude - airportElevation < 990 ||
+            this.aircraft[1].altitude - airportElevation < 990
+        ) {
             return;
         }
 
         // TODO: replace magic numbers with enum
         // Ignore aircraft in the first minute of their flight
-        if (gameTime - this.aircraft[0].takeoffTime < 60 ||
-            gameTime - this.aircraft[1].takeoffTime < 60) {
+        if (
+            gameTime - this.aircraft[0].takeoffTime < 60 ||
+            gameTime - this.aircraft[1].takeoffTime < 60
+        ) {
             return;
         }
 
@@ -177,8 +173,10 @@ export default class AircraftConflict {
         //if horizontal distance between them < 0.05 and vertical distance betweem them < 160
 
         if (
-            ((this.distance < 0.05) && (this.altitude < 160)) &&
-            (this.aircraft[0].isInsideAirspace(airport) && this.aircraft[1].isInsideAirspace(airport))
+            this.distance < 0.05 &&
+            this.altitude < 160 &&
+            this.aircraft[0].isInsideAirspace(airport) &&
+            this.aircraft[1].isInsideAirspace(airport)
         ) {
             this.collided = true;
             const isWarning = true;
@@ -200,10 +198,10 @@ export default class AircraftConflict {
      * @for AircraftConflict
      * @method getSeperations
      */
-    getSeperations(){
+    getSeperations() {
         return {
-            "vertical": this.altitude,
-            "horizontal": this.distance
+            vertical: this.altitude,
+            horizontal: this.distance,
         };
     }
 
@@ -228,10 +226,12 @@ export default class AircraftConflict {
         const a2 = this.aircraft[1];
         let applicableLatSepMin = SEPARATION.STANDARD_LATERAL_KM;
 
-
         // Established on precision guided approaches && both are following different instrument approaches
-        if ((a1.isEstablishedOnCourse() && a2.isEstablishedOnCourse()) &&
-            (a1.fms.arrivalRunwayModel.name !== a2.fms.arrivalRunwayModel.name)) {
+        if (
+            a1.isEstablishedOnCourse() &&
+            a2.isEstablishedOnCourse() &&
+            a1.fms.arrivalRunwayModel.name !== a2.fms.arrivalRunwayModel.name
+        ) {
             const runwayRelationship = AirportController.airport_get().getRunwayRelationshipForRunwayNames(
                 a1.fms.arrivalRunwayModel.name,
                 a2.fms.arrivalRunwayModel.name
@@ -241,7 +241,7 @@ export default class AircraftConflict {
                 // hide notices for aircraft on adjacent final approach courses
                 disableNotices = true;
                 //updated by a method in RunwayRelationshipModel
-                //applicableLatSepMin = runwayRelationship.separationMinimum;
+                applicableLatSepMin = runwayRelationship.separationMinimum;
             }
         }
 
@@ -253,9 +253,7 @@ export default class AircraftConflict {
         //conflict = (this.distance < applicableLatSepMin + 1.852 && !disableNotices) || violation; // +1.0nm
 
         //new formula
-        conflict = (this.distance < applicableLatSepMin && !disableNotices) || violation; // +1.0nm
-
-
+        // conflict = (this.distance < applicableLatSepMin && !disableNotices) || violation; // +1.0nm
 
         // "Passing & Diverging" Rules (the "exception" to all of the above rules)
         // test the below only if separation is currently considered insufficient
@@ -285,7 +283,8 @@ export default class AircraftConflict {
                     const v = (dy * ad[0] - dx * ad[1]) / det; // a2's distance from point of convergence
 
                     // TODO: this should be a helper function that live in one of the math/ files
-                    if ((u < 0) || (v < 0)) { // check if either a/c has passed the point of convergence
+                    if (u < 0 || v < 0) {
+                        // check if either a/c has passed the point of convergence
                         conflict = false; // targets are diverging
                         violation = false; // targets are diverging
                     }
@@ -326,7 +325,9 @@ export default class AircraftConflict {
      * @return {Boolean}
      */
     isDuplicate() {
-        return this._findInstancesOfThisConflictInAircraftController().length > 1;
+        return (
+            this._findInstancesOfThisConflictInAircraftController().length > 1
+        );
     }
 
     /**
@@ -338,7 +339,9 @@ export default class AircraftConflict {
      * @return {Boolean}
      */
     isAlreadyKnown() {
-        return this._findInstancesOfThisConflictInAircraftController().length > 0;
+        return (
+            this._findInstancesOfThisConflictInAircraftController().length > 0
+        );
     }
 
     /**
@@ -377,7 +380,10 @@ export default class AircraftConflict {
      */
     _findInstancesOfThisConflictInAircraftController() {
         return _filter(window.aircraftController.conflicts, (conflict) => {
-            return _includes(conflict.aircraft, this.aircraft[0]) && _includes(conflict.aircraft, this.aircraft[1]);
+            return (
+                _includes(conflict.aircraft, this.aircraft[0]) &&
+                _includes(conflict.aircraft, this.aircraft[1])
+            );
         });
     }
 }

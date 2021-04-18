@@ -79,7 +79,6 @@ export default class Agent {
     step() {
         this.departure_manager.step();
         this.arrival_manager.step();
-        // this.conflict_resolver.logAnalytics();
     }
 
     resolver_step() {

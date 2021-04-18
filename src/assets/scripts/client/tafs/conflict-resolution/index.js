@@ -1,17 +1,24 @@
 import _ from "lodash";
 import { distanceToPoint } from "../../math/circle";
-import { ConflitCategories } from "../conflict-detection/detector";
 
-const SPEEDINCREMENT = 25; // we will increment the speed by 25 knots.
-const ALTITUDEINCREMENT = 1000; // altitude increment factor
-const TIMESTAMP = 30; // Time in seconds before taking other action
+const SPEED_CHANGE = 25;
+const ALTITUTDE_CHANGE = 1000;
+const RESOLUTION_TIME = 30;
+const TIME_DECREMENT_STEP = 5;
 
-const Resolutions = {
-    Altitude: 1,
-    Speed: 2,
-    ProceedDirect: 3,
-    HoldingPattern: 4,
+const RESOLUTIONS = {
+    SPEED: 1,
+    ALTITUDE: 2,
+    PROCEED_DIRECT: 3,
+    HOLDING_PATTERN: 4,
 };
+
+function calc_remaining_distance(aircraft, fixes) {
+    return calc_path_distance(
+        _.map(aircraft.fms.waypoints, (waypoint) => waypoint.name),
+        fixes
+    );
+}
 
 function calc_path_distance(path, fixes) {
     let total = 0;
@@ -27,362 +34,261 @@ function calc_path_distance(path, fixes) {
 }
 
 export default class ConflictResolution {
-    constructor(reader, writer, timeFactor) {
+    constructor(reader, writer) {
         this.sim_reader = reader;
         this.sim_writer = writer;
-        this.instructed = new Set(); // Aircrafts that have already been instructed
-        this.holdingAirCrafts = {}; // Aircrafs that are in hold
-        this.allaircraftsModels = this.sim_reader.get_all_aircrafts();
-        this.totalConflictsArisen = 0;
-        this.totalSIDConflictsResolved = 0;
-        this.totalSTARConflictsResolved = 0;
-        this.totalconflictsresolved = 0;
-        this.totalCollisions = 0;
-        this.resolutionsMade = {};
         this.fixes = _.keyBy(this.sim_reader.get_all_fixes(), "name");
         this.fixes = _.mapValues(this.fixes, (fix) => [
             fix._positionModel.latitude,
             fix._positionModel.longitude,
         ]);
 
-        this.calledAfter = timeFactor;
-        this.busyFixes = {};
+        this.resolutions = {};
+        this.resolved_conflicts = 0;
     }
 
-    // returns a conflict id
-    getID(conflict) {
-        return (conflict.first + conflict.second).split("").sort().join("");
+    get_conflict_id(conflict) {
+        if (conflict.first.localeCompare(conflict.second) === -1)
+            return conflict.first + conflict.second;
+        return conflict.second + conflict.first;
     }
 
-    getAirCraftModel(callsign) {
-        for (let i = 0; i < this.allaircraftsModels.length; i++) {
-            if (callsign === this.allaircraftsModels[i].getCallsign()) {
-                return this.allaircraftsModels[i];
-            }
-        }
-    }
-
-    getCurrentAltitude(callsign) {
-        return this.getAirCraftModel(callsign).altitude;
-    }
-
-    getCurrentSpeed(callsign) {
-        return this.getAirCraftModel(callsign).speed;
-    }
-
-    updateResolutionsMade(conflict) {
-        const id = this.getID(conflict);
-        this.resolutionsMade[id] = {
-            conflict: conflict,
-            vertical: conflict.vertical,
-            horizontal: conflict.horizontal,
-            time: TIMESTAMP,
-        };
-        this.totalConflictsArisen += 1;
-    }
-
-    // return an array of possible resolutions for a given aircraft
-    // returns null in case none is possible
-    PossibleResolutionsForAirCraftSID(callsign) {
-        if (this.instructed.has(callsign)) return null;
-
-        let alValid = true;
-        let pdValid = true;
-        let spValid = true;
-
-        const model = this.getAirCraftModel(callsign);
-        const waypoints = this.getAirCraftModel(callsign).fms.waypoints;
-
-        if (this.getCurrentAltitude(callsign) === model.model.ceiling)
-            alValid = false;
-        if (this.getCurrentSpeed(callsign) === model.model.speed.max)
-            spValid = false;
-        if (waypoints.length <= 1) pdValid = false;
-
-        let resolutions = [];
-        if (alValid) resolutions.push(Resolutions.Altitude);
-        if (spValid) resolutions.push(Resolutions.Speed);
-        if (pdValid) resolutions.push(Resolutions.ProceedDirect);
-        if (resolutions.length == 0) return null;
-        return resolutions;
-    }
-
-    // returns the call sign of an aircraft to instruct in sidsid case.
-    // returns nullstring if the conflict has already been taken care of
-    getCallSignOfAircraftToInstructSID(conflit) {
-        const id = this.getID(conflit);
-        if (id in this.resolutionsMade) return null;
-        // TODO LATER
-    }
-
-    // return an array of possible resolutions for a given aircraft
-    // returns null in case none is possible
-    PossibleResolutionsForAirCraftSTAR(callsign) {
-        if (this.instructed.has(callsign)) return null;
-
-        let hpValid = true;
-        let spValid = true;
-
-        const model = this.getAirCraftModel(callsign);
-        if (
-            this.getAirCraftModel(callsign) === undefined ||
-            callsign in this.holdingAirCrafts
-        )
-            return null;
-
-        const waypoints = this.getAirCraftModel(callsign).fms.waypoints;
-
-        if (
-            this.getCurrentSpeed(callsign) <
-            model.model.speed.min + SPEEDINCREMENT
-        )
-            spValid = false;
-        if (waypoints.length <= 1) hpValid = false;
-
-        let resolutions = [];
-
-        if (spValid) resolutions.push(Resolutions.Speed);
-        if (hpValid) resolutions.push(Resolutions.HoldingPattern);
-
-        if (resolutions.length == 0) return null;
-        return resolutions;
-    }
-
-    getSTARResolution(conflict) {
-        const id = this.getID(conflict);
-        //if (id in this.resolutionsMade) return null;
-
-        const first_options = this.PossibleResolutionsForAirCraftSTAR(
-            conflict.first
+    already_instructed(callsign) {
+        const instructed = _.map(
+            Object.values(this.resolutions),
+            (resolution) => resolution.callsign
         );
-        const second_options = this.PossibleResolutionsForAirCraftSTAR(
+        return instructed.includes(callsign);
+    }
+
+    is_fix_available_for_holding(waypoint) {
+        const holding_resolutions = _.filter(
+            Object.values(this.resolutions),
+            (resolution) =>
+                resolution.instruction === RESOLUTIONS.HOLDING_PATTERN
+        );
+
+        const busy_wps = _.map(
+            holding_resolutions,
+            (resolution) => resolution.holding_fix
+        );
+
+        return !busy_wps.includes(waypoint);
+    }
+
+    is_false_positive_starstar(conflict) {
+        const first = this.sim_reader.get_aircraft_by_callsign(conflict.first);
+        const second = this.sim_reader.get_aircraft_by_callsign(
             conflict.second
         );
 
-        var targetCallsign = null;
-        // if no options are available for any aircraft, we opt for the other
-        if (first_options === null || second_options === null) {
-            if (first_options === null) targetCallsign = conflict.second;
-            else targetCallsign = conflict.first;
-        } else {
-            // obtain the aircraft having max distance
+        const first_heading = first.heading * (180 / Math.PI);
+        const second_heading = second.heading * (180 / Math.PI);
 
-            const aircraft1 = this.getAirCraftModel(conflict.first);
-            const aircraft2 = this.getAirCraftModel(conflict.second);
-            const first_rem_path = _.map(
-                aircraft1.fms.waypoints,
-                (waypoint) => waypoint.name
-            );
-            const second_rem_path = _.map(
-                aircraft2.fms.waypoints,
-                (waypoint) => waypoint.name
-            );
+        const diff_heading = Math.abs(first_heading - second_heading);
+        if (diff_heading >= 175 && diff_heading <= 185) {
+            const bearing =
+                first.positionModel.bearingToPosition({
+                    latitude: second.positionModel.latitude,
+                    longitude: second.positionModel.longitude,
+                }) *
+                (180 / Math.PI);
 
-            const first_distance = calc_path_distance(
-                first_rem_path,
-                this.fixes
-            );
-            const second_distance = calc_path_distance(
-                second_rem_path,
-                this.fixes
-            );
+            if (Math.abs(bearing - first_heading) > 5) return true;
+        }
+        return false;
+    }
 
-            targetCallsign =
-                first_distance >= second_distance
+    possible_resolutions_starstar(callsign) {
+        if (this.already_instructed(callsign)) return null;
+
+        const model = this.sim_reader.get_aircraft_by_callsign(callsign);
+        if (_.isNil(model) || !model.isControllable) return null;
+
+        const resolutions = [];
+        if (model.fms.waypoints.length > 3)
+            resolutions.push(RESOLUTIONS.HOLDING_PATTERN);
+        if (model.speed - SPEED_CHANGE > model.model.speed.min)
+            resolutions.push(RESOLUTIONS.SPEED);
+
+        if (resolutions.length === 0) return null;
+        return resolutions;
+    }
+
+    choose_resolution_starstar(conflict) {
+        const first = this.sim_reader.get_aircraft_by_callsign(conflict.first);
+        const second = this.sim_reader.get_aircraft_by_callsign(
+            conflict.second
+        );
+
+        const first_opts = this.possible_resolutions_starstar(conflict.first);
+        const second_opts = this.possible_resolutions_starstar(conflict.second);
+
+        let callsign = null;
+        if (first_opts === null && second_opts === null) return null;
+        else if (first_opts !== null && second_opts === null)
+            callsign = conflict.first;
+        else if (first_opts === null && second_opts !== null)
+            callsign = conflict.second;
+        else {
+            const first_distance = calc_remaining_distance(first, this.fixes);
+            const second_distance = calc_remaining_distance(second, this.fixes);
+            callsign =
+                first_distance > second_distance
                     ? conflict.first
                     : conflict.second;
         }
-        if (targetCallsign !== null) {
-            const options =
-                targetCallsign === conflict.first
-                    ? first_options
-                    : second_options;
 
-            if (options === null) {
-                console.log("NO RESOLVE POSSIBLE");
-                return null;
-            }
-
-            if (options.includes(Resolutions.HoldingPattern)) {
-                // instruct holding pattern
-                return {
-                    callsign: targetCallsign,
-                    instruction: Resolutions.HoldingPattern,
-                };
-            } else if (options.includes(Resolutions.Speed)) {
-                return {
-                    callsign: targetCallsign,
-                    instruction: Resolutions.Speed,
-                };
-            }
-            // currently, we are not doing direct proceeding and altitude chaging
-        }
+        const options = callsign === conflict.first ? first_opts : second_opts;
+        if (options.includes(RESOLUTIONS.HOLDING_PATTERN))
+            return {
+                callsign: callsign,
+                instruction: RESOLUTIONS.HOLDING_PATTERN,
+            };
+        else if (options.includes(RESOLUTIONS.SPEED))
+            return {
+                callsign: callsign,
+                instruction: RESOLUTIONS.SPEED,
+            };
         return null;
     }
 
-    resolveSTARConflict(conflict) {
-        const resolution = this.getSTARResolution(conflict);
-        if (resolution !== null) {
-            if (resolution.instruction === Resolutions.HoldingPattern) {
-                const waypoints = this.getAirCraftModel(resolution.callsign).fms
-                    .waypoints;
-                const lastwp = waypoints[0]._name; // hold on the next way point
-                // if the fix is busy we will use altitude adjustment
-                if (lastwp in this.busyFixes) {
-                    this.sim_writer.send_command(
-                        `${resolution.callsign} climb 17`
-                    );
-                    console.log(
-                        `${resolution.callsign} has been instructed to climb FL: 17`
-                    );
-                } else {
-                    const newAltitude = Math.floor(
-                        (this.getCurrentAltitude(resolution.callsign) + 1000) /
-                            100
-                    );
-                    this.sim_writer.send_command(
-                        `${resolution.callsign} hold ${lastwp} climb ${newAltitude}`
-                    );
-                    this.holdingAirCrafts[resolution.callsign] = {
-                        callsign: resolution.callsign,
-                        time: TIMESTAMP,
-                        fix: lastwp,
-                    };
-                    console.log(
-                        `${resolution.callsign} has been instructed to hold arround ${lastwp}`
-                    );
-                    // mark the fix as busy
-                    this.busyFixes[lastwp] = this.getCurrentAltitude(
-                        resolution.callsign
-                    );
-                }
-            } else if (resolution.instruction === Resolutions.Speed) {
-                const decNewSpeed =
-                    this.getCurrentSpeed(resolution.callsign) - SPEEDINCREMENT;
+    enact_resolution_starstar(conflict) {
+        if (this.get_conflict_id(conflict) in this.resolutions) return null;
+        if (this.is_false_positive_starstar(conflict)) return null;
 
-                const model = this.getAirCraftModel(resolution.callsign).model;
+        const resolution = this.choose_resolution_starstar(conflict);
+        if (resolution === null) return;
 
-                if (model.isAbleToMaintainSpeed(decNewSpeed)) {
-                    this.sim_writer.send_command(
-                        `${resolution.callsign} speed ${decNewSpeed}`
-                    );
-                    console.log(
-                        `${resolution.callsign} new speed == ${decNewSpeed}`
-                    );
-                } else return;
-            }
-            this.updateResolutionsMade(conflict);
-            this.instructed.add(resolution.callsign);
-        }
-    }
+        const id = this.get_conflict_id(conflict);
+        const { callsign, instruction } = resolution;
+        const model = this.sim_reader.get_aircraft_by_callsign(callsign);
 
-    updateOldResolutions() {
-        // this will be binded in an external callback
-        // decrementing timer for all
-        for (let key in this.resolutionsMade) {
-            this.resolutionsMade[key].time -= this.calledAfter;
-        }
-
-        // aircraft should exit hold after timestamp
-        for (let key in this.holdingAirCrafts) {
-            this.holdingAirCrafts[key].time -= this.calledAfter;
-            if (this.holdingAirCrafts[key].time <= 0) {
-                var newAltitude = "";
-                if (this.getCurrentAltitude(key) > 2000) {
-                    newAltitude = " dvs 20";
-                }
+        if (instruction === RESOLUTIONS.HOLDING_PATTERN) {
+            const fix = model.fms.waypoints[0]._name;
+            if (!this.is_fix_available_for_holding(fix)) {
+                this.sim_writer.send_command(`${callsign} climb 17`);
+                this.resolutions[id] = {
+                    conflict: conflict,
+                    callsign: callsign,
+                    instruction: RESOLUTIONS.ALTITUDE,
+                    altitude: 1100,
+                    timestamp: RESOLUTION_TIME,
+                };
+            } else {
+                const new_altitude = (model.altitude + ALTITUTDE_CHANGE) / 100;
                 this.sim_writer.send_command(
-                    // stop holding
-                    `${key} exithold ${newAltitude}`
+                    `${callsign} hold ${fix} climb ${new_altitude}`
                 );
-                delete this.busyFixes[this.holdingAirCrafts[key].fix]; // marking the fix free
-                delete this.holdingAirCrafts[key];
-                console.log(`${key} has been instructed to exit hold`);
+                this.resolutions[id] = {
+                    conflict: conflict,
+                    callsign: callsign,
+                    instruction: RESOLUTIONS.HOLDING_PATTERN,
+                    altitude: new_altitude * 100,
+                    holding_fix: fix,
+                    timestamp: RESOLUTION_TIME * 2,
+                };
+            }
+        } else if (instruction === RESOLUTIONS.SPEED) {
+            const new_speed = model.speed - SPEED_CHANGE;
+            if (model.model.isAbleToMaintainSpeed(new_speed)) {
+                this.sim_writer.send_command(`${callsign} speed ${new_speed}`);
+                this.resolutions[id] = {
+                    conflict: conflict,
+                    callsign: callsign,
+                    instruction: RESOLUTIONS.SPEED,
+                    speed: new_speed,
+                    timestamp: RESOLUTION_TIME,
+                };
             }
         }
     }
 
-    updateConflicts(conflicts) {
-        // If the seperation has increased b/w aircrafs, conflict is resolved
-        for (const con of conflicts) {
-            const id = this.getID(con);
-            if (id in this.resolutionsMade) {
-                if (this.resolutionsMade[id].time > 0) {
-                    continue;
-                } else if (
-                    this.resolutionsMade[id].time <= 0 &&
-                    (this.resolutionsMade[id].vertical > 6 ||
-                        this.resolutionsMade[id].horizontal > 6)
-                ) {
-                    this.totalconflictsresolved += 1;
-                    delete this.resolutionsMade[id];
-                    if (this.instructed.has(con.first))
-                        this.instructed.delete(con.first);
-                    else if (this.instructed.has(con.second))
-                        this.instructed.delete(con.second);
-                } else if (this.resolutionsMade[id].time < 0) {
-                    this.resolutionsMade[id].time = TIMESTAMP;
-                }
-            }
-        }
-    }
-    criticalConflicts(conflicts) {
-        for (const con in conflicts) {
-            if (con.vertical <= 0.5 && con.horizontal <= 0.5) {
-                //critial conflicts
-                const aircraft1 = this.getAirCraftModel(con.first);
-                const aircraft2 = this.getAirCraftModel(con.second);
-                const first_rem_path = _.map(
-                    aircraft1.fms.waypoints,
-                    (waypoint) => waypoint.name
-                );
-                const second_rem_path = _.map(
-                    aircraft2.fms.waypoints,
-                    (waypoint) => waypoint.name
-                );
+    update_resolutions() {
+        const resolved = [];
+        for (const resolution of Object.values(this.resolutions)) {
+            resolution.timestamp -= TIME_DECREMENT_STEP;
+            const first_callsign = resolution.conflict.first;
+            const second_callsign = resolution.conflict.second;
+            const instructed_model = this.sim_reader.get_aircraft_by_callsign(
+                resolution.callsign
+            );
 
-                const first_distance = calc_path_distance(
-                    first_rem_path,
-                    this.fixes
-                );
-                const second_distance = calc_path_distance(
-                    second_rem_path,
-                    this.fixes
-                );
-                const targetCallsign =
-                    first_distance >= second_distance
-                        ? conflict.first
-                        : conflict.second;
-                const newalt = Math.floor(
-                    (this.getCurrentAltitude(targetCallsign) + 1000) / 100
-                );
-                this.sim_writer.send_command(
-                    `${targetCallsign} climb ${newalt}`
-                );
-                console.log(
-                    `Resolved a critical conflict for ${targetCallsign}`
-                );
-            }
-        }
-    }
-    step(conflicts, category) {
-        this.updateOldResolutions();
-        this.updateConflicts(conflicts);
-        this.criticalConflicts(conflicts);
-        for (const con of conflicts) {
-            const id = this.getID(con);
-            if (id in this.resolutionsMade) {
+            if (_.isNil(instructed_model)) {
+                resolved.push(this.get_conflict_id(resolution.conflict));
                 continue;
             }
-            this.resolveSTARConflict(con);
+
+            if (resolution.timestamp <= 0) {
+                if (
+                    this.sim_reader.are_callsigns_in_conflict(
+                        first_callsign,
+                        second_callsign
+                    )
+                )
+                    resolution.timestamp = RESOLUTION_TIME;
+                else {
+                    if (resolution.instruction == RESOLUTIONS.HOLDING_PATTERN) {
+                        let dvs_cmd = "";
+                        if (instructed_model.altitude > 2000)
+                            dvs_cmd = "dvs 20";
+
+                        this.sim_writer.send_command(
+                            `${instructed_model.callsign} exithold ${dvs_cmd}`
+                        );
+                    }
+
+                    resolved.push(this.get_conflict_id(resolution.conflict));
+                    this.resolved_conflicts += 1;
+                }
+            }
         }
+
+        for (const id of resolved) delete this.resolutions[id];
     }
 
-    logAnalytics() {
-        const data = {
-            totalConflicts: this.totalConflictsArisen,
-            totalSTARConfsResolved: this.totalconflictsresolved,
-        };
-        console.log(data);
+    handle_critical_conflicts_starstar(conflicts) {
+        _.remove(conflicts, (conflict) => {
+            if (conflict.vertical <= 0.5 && conflict.horizontal <= 0.5) {
+                const first = this.sim_reader.get_aircraft_by_callsign(
+                    conflict.first
+                );
+                const second = this.sim_reader.get_aircraft_by_callsign(
+                    conflict.second
+                );
+
+                const first_distance = calc_remaining_distance(
+                    first,
+                    this.fixes
+                );
+                const second_distance = calc_remaining_distance(
+                    second,
+                    this.fixes
+                );
+
+                const callsign =
+                    first_distance > second_distance
+                        ? conflict.first
+                        : conflict.second;
+                const model = this.sim_reader.get_aircraft_by_callsign(
+                    callsign
+                );
+
+                const new_altitude = (model.altitude + ALTITUTDE_CHANGE) / 100;
+                this.sim_writer.send_command(
+                    `${callsign} climb ${new_altitude}`
+                );
+                return true;
+            }
+            return false;
+        });
+    }
+
+    step_starstar(conflicts) {
+        this.update_resolutions();
+        this.handle_critical_conflicts_starstar(conflicts);
+        for (const conflict of conflicts) {
+            this.enact_resolution_starstar(conflict);
+        }
     }
 }
