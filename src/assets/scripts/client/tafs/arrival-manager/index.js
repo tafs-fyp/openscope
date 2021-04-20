@@ -63,6 +63,10 @@ class STARModel {
         const entry = aircraft_flt_plan_end(aircraft);
         const exit = `${AIRPORT_ICAO}${_.sample(arrival_runways)}`;
 
+        console.log(
+            `[ARRIVAL MANAGER] ${aircraft.callsign} HAS BEEN ASSIGNED STAR: ${entry}.${this.sim_star._icao}.${exit}`
+        );
+
         sim_writer.send_command(
             `${aircraft.callsign} route ${entry}.${this.sim_star._icao}.${exit}`
         );

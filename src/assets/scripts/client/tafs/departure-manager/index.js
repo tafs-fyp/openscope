@@ -95,6 +95,10 @@ class SIDModel {
 
         this.queue.shift();
 
+        console.log(
+            `[DEPARTURE MANAGER] ${aircraft.callsign} HAS BEEN ASSIGNED SID: ${entry}.${this.sim_sid._icao}.${exit}`
+        );
+
         sim_writer.send_command(
             `${aircraft.callsign} sid ${entry}.${this.sim_sid._icao}.${exit}`
         );

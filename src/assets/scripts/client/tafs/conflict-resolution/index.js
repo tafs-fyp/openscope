@@ -33,6 +33,14 @@ function calc_path_distance(path, fixes) {
     return total;
 }
 
+function deg_to_rad(deg) {
+    return deg * (Math.PI / 180);
+}
+
+function rad_to_deg(rad) {
+    return rad * (180 / Math.PI);
+}
+
 export default class ConflictResolution {
     constructor(reader, writer) {
         this.sim_reader = reader;
@@ -82,20 +90,49 @@ export default class ConflictResolution {
             conflict.second
         );
 
-        const first_heading = first.heading * (180 / Math.PI);
-        const second_heading = second.heading * (180 / Math.PI);
+        const [x1, y1] = first.positionModel._calculateRelativePosition();
+        const [x2, y2] = second.positionModel._calculateRelativePosition();
 
-        const diff_heading = Math.abs(first_heading - second_heading);
-        if (diff_heading >= 175 && diff_heading <= 185) {
-            const bearing =
-                first.positionModel.bearingToPosition({
-                    latitude: second.positionModel.latitude,
-                    longitude: second.positionModel.longitude,
-                }) *
-                (180 / Math.PI);
+        const first_heading = rad_to_deg(first.heading);
+        const second_heading = rad_to_deg(second.heading);
 
-            if (Math.abs(bearing - first_heading) > 5) return true;
-        }
+        const vx1 =
+            first.speed * 1.852 * Math.cos(deg_to_rad(-(first_heading - 90)));
+        const vy1 =
+            first.speed * 1.852 * Math.sin(deg_to_rad(-(first_heading - 90)));
+        const vx2 =
+            second.speed * 1.852 * Math.cos(deg_to_rad(-(second_heading - 90)));
+        const vy2 =
+            second.speed * 1.852 * Math.sin(deg_to_rad(-(second_heading - 90)));
+
+        const coll_time_hour =
+            -(
+                x1 * vx1 -
+                vx1 * x2 -
+                (x1 - x2) * vx2 +
+                y1 * vy1 -
+                vy1 * y2 -
+                (y1 - y2) * vy2
+            ) /
+            (Math.pow(vx1, 2) -
+                2 * vx1 * vx2 +
+                Math.pow(vx2, 2) +
+                Math.pow(vy1, 2) -
+                2 * vy1 * vy2 +
+                Math.pow(vy2, 2));
+
+        const min_dist_km = Math.sqrt(
+            Math.pow(coll_time_hour * vx1 - coll_time_hour * vx2 + x1 - x2, 2) +
+                Math.pow(
+                    coll_time_hour * vy1 - coll_time_hour * vy2 + y1 - y2,
+                    2
+                )
+        );
+
+        const coll_time_sec = coll_time_hour * 60 * 60;
+        if (coll_time_sec < 0 || coll_time_sec > 60 || min_dist_km > 2)
+            return true;
+
         return false;
     }
 
@@ -176,7 +213,7 @@ export default class ConflictResolution {
                     timestamp: RESOLUTION_TIME,
                 };
                 console.log(
-                    `${callsign} has been instructed to descend to FL17`
+                    `[CONFLICT RESOLVER] ${callsign} HAS BEEN INSTRUCTED TO DESCEND TO FL17`
                 );
             } else {
                 const new_altitude = (model.altitude + ALTITUTDE_CHANGE) / 100;
@@ -192,7 +229,7 @@ export default class ConflictResolution {
                     timestamp: RESOLUTION_TIME * 2,
                 };
                 console.log(
-                    `${callsign} has been instructed to hold at ${fix}`
+                    `[CONFLICT RESOLVER] ${callsign} HAS BEEN INSTRUCTED TO HOLD AT ${fix}`
                 );
             }
         } else if (instruction === RESOLUTIONS.SPEED) {
@@ -207,7 +244,7 @@ export default class ConflictResolution {
                     timestamp: RESOLUTION_TIME,
                 };
                 console.log(
-                    `${callsign} has been instructed to reduce speed by 25KTS`
+                    `[CONFLICT RESOLVER] ${callsign} HAS BEEN INSTRUCTED TO REDUCE SPEED BY 25KTS`
                 );
             }
         }
@@ -261,50 +298,47 @@ export default class ConflictResolution {
         for (const id of resolved) delete this.resolutions[id];
     }
 
-    handle_critical_conflicts_starstar(conflicts) {
-        _.remove(conflicts, (conflict) => {
-            if (conflict.vertical <= 0.5 && conflict.horizontal <= 0.5) {
-                const first = this.sim_reader.get_aircraft_by_callsign(
-                    conflict.first
-                );
-                const second = this.sim_reader.get_aircraft_by_callsign(
-                    conflict.second
-                );
+    // handle_critical_conflicts_starstar(conflicts) {
+    //     _.remove(conflicts, (conflict) => {
+    //         if (conflict.vertical <= 0.5 && conflict.horizontal <= 0.5) {
+    //             const first = this.sim_reader.get_aircraft_by_callsign(
+    //                 conflict.first
+    //             );
+    //             const second = this.sim_reader.get_aircraft_by_callsign(
+    //                 conflict.second
+    //             );
 
-                const first_distance = calc_remaining_distance(
-                    first,
-                    this.fixes
-                );
-                const second_distance = calc_remaining_distance(
-                    second,
-                    this.fixes
-                );
+    //             const first_distance = calc_remaining_distance(
+    //                 first,
+    //                 this.fixes
+    //             );
+    //             const second_distance = calc_remaining_distance(
+    //                 second,
+    //                 this.fixes
+    //             );
 
-                const callsign =
-                    first_distance > second_distance
-                        ? conflict.first
-                        : conflict.second;
-                const model = this.sim_reader.get_aircraft_by_callsign(
-                    callsign
-                );
+    //             const callsign =
+    //                 first_distance > second_distance
+    //                     ? conflict.first
+    //                     : conflict.second;
+    //             const model = this.sim_reader.get_aircraft_by_callsign(
+    //                 callsign
+    //             );
 
-                const new_altitude = (model.altitude + ALTITUTDE_CHANGE) / 100;
-                this.sim_writer.send_command(
-                    `${callsign} climb ${new_altitude}`
-                );
-                return true;
-            }
-            return false;
-        });
-    }
+    //             const new_altitude = (model.altitude + ALTITUTDE_CHANGE) / 100;
+    //             this.sim_writer.send_command(
+    //                 `${callsign} climb ${new_altitude}`
+    //             );
+    //             return true;
+    //         }
+    //         return false;
+    //     });
+    // }
 
     step_starstar(conflicts) {
         this.update_resolutions();
-        this.handle_critical_conflicts_starstar(conflicts);
+        // this.handle_critical_conflicts_starstar(conflicts);
         for (const conflict of conflicts) {
-            console.log(
-                `Conflict between ${conflict.first} and ${conflict.second}`
-            );
             this.enact_resolution_starstar(conflict);
         }
     }

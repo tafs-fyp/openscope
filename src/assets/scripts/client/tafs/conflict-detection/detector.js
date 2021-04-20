@@ -56,10 +56,7 @@ export default class Detector {
 
     step() {
         let conflicts = this.aircraftcontroller.getConflicts();
-        let collidedAirCrafts = this.aircraftcontroller.getCollidedAirCrafts();
-        if (collidedAirCrafts.length > 0) {
-            console.log("Total Collisions: " + collidedAirCrafts.length);
-        }
+        // let collidedAirCrafts = this.aircraftcontroller.getCollidedAirCrafts();
 
         if (conflicts.length > 0) {
             let sidconflicts = this.getConflictsFor(
