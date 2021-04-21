@@ -35,7 +35,7 @@ class SIDModel {
         this.sim_sid = sim_sid;
 
         this.queue = [];
-        this.flying = [];
+        this.total_departures = 0;
 
         this.traffic = 0;
         this.last_used = null;
@@ -114,11 +114,8 @@ class SIDModel {
                     ) * DEPARTURE_ALT_STEP
                 }`
             );
-            this.flying.push(aircraft);
-            console.log(
-                `[DEPARTURE MANAGER] ${this.flying.length} DEPARTURES HAVE BEEN HANDLED SUCCESSFULLY`
-            );
 
+            this.total_departures += 1;
             runways_locked[runway] = new Date();
             this.last_used = new Date();
         }, TAXI_TAKEOFF_DELAY);
@@ -169,8 +166,14 @@ export default class DepartureManager {
 
     step() {
         this.assign_sids();
+        let successful_departures = 0;
         for (const sid of this.available_sids) {
             sid.depart_from_queue(this.sim_writer);
+            successful_departures += sid.total_departures;
         }
+
+        console.log(
+            `[DEPARTURE MANAGER] ${successful_departures} DEPARTURES HAVE TAKEN OFF`
+        );
     }
 }

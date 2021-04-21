@@ -30,10 +30,10 @@ class STARModel {
         this.sim_star = sim_star;
 
         this.flying = [];
+        this.total_arrivals = 0;
+
         this.traffic = 0;
         this.distance = this.calc_star_distance();
-
-        this.succcessful_arrivals = 0;
     }
 
     calc_star_distance() {
@@ -134,13 +134,8 @@ class STARModel {
                 `${aircraft.callsign} ils ${exit.replace(AIRPORT_ICAO, "")}`
             );
 
+            this.total_arrivals += 1;
             this.traffic -= 1;
-            this.succcessful_arrivals += 1;
-
-            console.log(
-                `[ARRIVAL MANAGER] ${this.succcessful_arrivals} ARRIVALS HAVE BEEN HANDLED SUCCESSFULLY`
-            );
-
             return true;
         });
     }
@@ -195,8 +190,14 @@ export default class ArrivalManager {
 
     step() {
         this.assign_stars();
+        let successful_arrivals = 0;
         for (const star of this.available_stars) {
             star.clear_ils(this.sim_writer);
+            successful_arrivals += star.total_arrivals;
         }
+
+        console.log(
+            `[ARRIVAL MANAGER] ${successful_arrivals} ARRIVALS HAVE LANDED`
+        );
     }
 }
