@@ -2,9 +2,9 @@ import _ from "lodash";
 import { distanceToPoint } from "../../math/circle";
 
 const AIRPORT_ICAO = "EDDH";
-const SID_TIME_DELAY = 90000;
-const RUNWAY_TIME_DELAY = 90000;
-const TAXI_TAKEOFF_DELAY = 20000;
+const SID_TIME_DELAY = 36000;
+const RUNWAY_TIME_DELAY = 36000;
+const TAXI_TAKEOFF_DELAY = 12000;
 
 const DEPARTURE_ALT_MIN = 80;
 const DEPARTURE_ALT_MAX = 100;
