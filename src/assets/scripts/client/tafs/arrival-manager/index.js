@@ -2,9 +2,10 @@ import _ from "lodash";
 import { distanceToPoint } from "../../math/circle";
 
 const AIRPORT_ICAO = "EDDH";
-const ARRIVAL_ALT_MIN = 20;
-const ARRIVAL_ALT_MAX = 40;
-const ARRIVAL_ALT_STEP = 10;
+const ASSIGNED_ALT = 2000;
+// const ARRIVAL_ALT_MIN = 20;
+// const ARRIVAL_ALT_MAX = 40;
+// const ARRIVAL_ALT_STEP = 10;
 
 function aircraft_flt_plan_end(aircraft) {
     return _.last(aircraft.fms.waypoints)._name.replace(/[\^@]/gi, "");
@@ -80,7 +81,9 @@ class STARModel {
         //         ) * ARRIVAL_ALT_STEP
         //     }`
         // );
-        sim_writer.send_command(`${aircraft.callsign} dvs 20`);
+        sim_writer.send_command(
+            `${aircraft.callsign} dvs ${ASSIGNED_ALT / 100}`
+        );
 
         this.traffic += 1;
         this.flying.push([aircraft, entry, exit]);
@@ -118,6 +121,12 @@ class STARModel {
         // });
         _.remove(this.flying, ([aircraft, _entry, exit]) => {
             if (aircraft.fms.waypoints.length > 1) return false;
+
+            console.log(
+                `[ARRIVAL MANAGER] ${
+                    aircraft.callsign
+                } HAS BEEN CLEARED FOR ILS ON ${exit.replace(AIRPORT_ICAO, "")}`
+            );
 
             sim_writer.send_command(
                 `${aircraft.callsign} ils ${exit.replace(AIRPORT_ICAO, "")}`

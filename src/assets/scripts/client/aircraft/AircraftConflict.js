@@ -186,6 +186,9 @@ export default class AircraftConflict {
                 isWarning
             );
 
+            console.log(
+                `[OPENSCOPE] ${this.aircraft[0].callsign} HAS COLLIDED WITH ${this.aircraft[1].callsign}`
+            );
             GameController.events_recordNew(GAME_EVENTS.COLLISION);
             this.aircraft[0].hit = true;
             this.aircraft[1].hit = true;

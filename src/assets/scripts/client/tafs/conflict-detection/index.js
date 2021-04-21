@@ -1,12 +1,8 @@
-//FYP TODOs
-/*
-1. Change the radius of conflict detection
-2. Made a simple algorithm for resolving conflicts. 
-
-*/
-
 import _ from "lodash";
 import { FLIGHT_CATEGORY } from "../../constants/aircraftConstants";
+
+const SEPARATION_HTHRESHOLD = 6;
+const SEPARATION_VTHRESHOLD = 1000;
 
 export const CONFLICT_CATEGORIES = {
     SIDSID: 1,
@@ -26,7 +22,11 @@ export default class Detector {
             const [first, second] = conflict.getConflictingAirCrafts();
 
             const separations = conflict.getSeperations();
-            if (separations.horizontal > 6) return false;
+            if (
+                separations.horizontal > SEPARATION_HTHRESHOLD ||
+                separations.vertical > SEPARATION_VTHRESHOLD
+            )
+                return false;
 
             if (category === CONFLICT_CATEGORIES.SIDSID)
                 return (
@@ -56,29 +56,14 @@ export default class Detector {
 
     step() {
         let conflicts = this.aircraftcontroller.getConflicts();
-        // let collidedAirCrafts = this.aircraftcontroller.getCollidedAirCrafts();
-
         if (conflicts.length > 0) {
-            let sidconflicts = this.getConflictsFor(
-                conflicts,
-                CONFLICT_CATEGORIES.SIDSID
-            );
             let starconflicts = this.getConflictsFor(
                 conflicts,
                 CONFLICT_CATEGORIES.STARSTAR
             );
-            let sidstarconflicts = this.getConflictsFor(
-                conflicts,
-                CONFLICT_CATEGORIES.SIDSTAR
-            );
 
-            if (sidconflicts.length > 0) {
-                //this.conflict_resolver.step(sidconflicts,CONFLICT_CATEGORIES.SIDSID);
-            }
             if (starconflicts.length > 0) {
                 this.conflict_resolver.step_starstar(starconflicts);
-            }
-            if (sidstarconflicts.length > 0) {
             }
         }
     }

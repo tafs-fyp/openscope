@@ -3,7 +3,7 @@ import Writer from "./io/Writer";
 
 import DepartureManager from "./departure-manager";
 import ArrivalManager from "./arrival-manager";
-import Detector from "./conflict-detection/detector";
+import Detector from "./conflict-detection";
 import ConflictResolution from "./conflict-resolution";
 
 export default class Agent {
