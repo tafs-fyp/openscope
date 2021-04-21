@@ -32,6 +32,8 @@ class STARModel {
         this.flying = [];
         this.traffic = 0;
         this.distance = this.calc_star_distance();
+
+        this.succcessful_arrivals = 0;
     }
 
     calc_star_distance() {
@@ -133,6 +135,12 @@ class STARModel {
             );
 
             this.traffic -= 1;
+            this.succcessful_arrivals += 1;
+
+            console.log(
+                `[ARRIVAL MANAGER] ${this.succcessful_arrivals} ARRIVALS HAVE BEEN HANDLED SUCCESSFULLY`
+            );
+
             return true;
         });
     }

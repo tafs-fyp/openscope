@@ -115,6 +115,9 @@ class SIDModel {
                 }`
             );
             this.flying.push(aircraft);
+            console.log(
+                `[DEPARTURE MANAGER] ${this.flying.length} DEPARTURES HAVE BEEN HANDLED SUCCESSFULLY`
+            );
 
             runways_locked[runway] = new Date();
             this.last_used = new Date();
