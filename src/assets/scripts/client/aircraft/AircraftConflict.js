@@ -253,7 +253,7 @@ export default class AircraftConflict {
         violation = this.distance < applicableLatSepMin;
         // TODO: enumerate the magic number.
         // TODO: this should be another class method
-        //conflict = (this.distance < applicableLatSepMin + 1.852 && !disableNotices) || violation; // +1.0nm
+        conflict = (this.distance < applicableLatSepMin + 1.852 && !disableNotices) || violation; // +1.0nm
 
         //new formula
         // conflict = (this.distance < applicableLatSepMin && !disableNotices) || violation; // +1.0nm
