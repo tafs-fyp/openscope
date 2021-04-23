@@ -5,6 +5,11 @@ import DepartureManager from "./departure-manager";
 import ArrivalManager from "./arrival-manager";
 import Detector from "./conflict-detection";
 import ConflictResolution from "./conflict-resolution";
+import EventBus from "../lib/EventBus";
+import { EVENT } from "../constants/eventNames";
+
+const STEP_INTERVAL = 50000;
+const RSTEP_INTERVAL = 25000;
 
 export default class Agent {
     constructor(app_controller) {
@@ -40,8 +45,16 @@ export default class Agent {
             this.conflict_resolver
         );
 
-        setInterval(this.step.bind(this), 10000);
-        setInterval(this.resolver_step.bind(this), 5000);
+        this.step_interval = setInterval(this.step.bind(this), STEP_INTERVAL);
+        this.rstep_interval = setInterval(
+            this.resolver_step.bind(this),
+            RSTEP_INTERVAL
+        );
+
+        EventBus.on(
+            EVENT.TIMEWARP_TOGGLE,
+            this.update_timewarp_params.bind(this)
+        );
     }
 
     choose_runways(dep_num = 1, arr_num = 1) {
@@ -74,6 +87,21 @@ export default class Agent {
                 this.arrival_runways.push(runway_pair[0].name);
             else this.arrival_runways.push(runway_pair[1].name);
         }
+    }
+
+    update_timewarp_params(value) {
+        clearInterval(this.step_interval);
+        clearInterval(this.rstep_interval);
+
+        this.step_interval = setInterval(
+            this.step.bind(this),
+            Math.floor(STEP_INTERVAL / value)
+        );
+
+        this.rstep_interval = setInterval(
+            this.resolver_step.bind(this),
+            Math.floor(RSTEP_INTERVAL / value)
+        );
     }
 
     step() {

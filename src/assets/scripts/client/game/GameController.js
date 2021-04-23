@@ -284,6 +284,7 @@ class GameController {
         }
 
         TimeKeeper.updateSimulationRate(nextValue);
+        EventBus.trigger(EVENT.TIMEWARP_TOGGLE, nextValue);
         EventTracker.recordEvent(TRACKABLE_EVENT.OPTIONS, 'timewarp', nextValue);
 
         const $fastForwards = $(SELECTORS.DOM_SELECTORS.FAST_FORWARDS);

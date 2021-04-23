@@ -177,10 +177,10 @@ export default class ScoreController {
         // TODO: these two if blocks could be done in a single switch statement
         if (wind.cross >= 20) {
             GameController.events_recordNew(GAME_EVENTS.EXTREME_CROSSWIND_OPERATION);
-            UiController.ui_log(`${aircraftModel.callsign} ${action} with major crosswind`, isWarning);
+            // UiController.ui_log(`${aircraftModel.callsign} ${action} with major crosswind`, isWarning);
         } else if (wind.cross >= 10) {
             GameController.events_recordNew(GAME_EVENTS.HIGH_CROSSWIND_OPERATION);
-            UiController.ui_log(`${aircraftModel.callsign} ${action} with crosswind`, isWarning);
+            // UiController.ui_log(`${aircraftModel.callsign} ${action} with crosswind`, isWarning);
         }
 
         if (wind.head <= -10) {
