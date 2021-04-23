@@ -360,7 +360,7 @@ export default class AircraftModel {
          * @type {number}
          * @default 3
          */
-        this.taxi_time = 3;
+        this.taxi_time = 1;
 
         /**
          * Either IFR or VFR (Instrument/Visual Flight Rules)
