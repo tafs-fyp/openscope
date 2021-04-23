@@ -14,7 +14,7 @@ const MIN_TIME_TO_RESOLVE = 60;
 const LOSS_OF_SEPARATION_DIST = 2;
 const LOSS_OF_SEPARATION_ALT = 500;
 
-const RESOLUTION_TIME = 30;
+const RESOLUTION_TIME = 20;
 const TIME_DECREMENT_STEP = 5;
 
 const RESOLUTIONS = {
@@ -23,6 +23,8 @@ const RESOLUTIONS = {
     PROCEED_DIRECT: 3,
     HOLDING_PATTERN: 4,
 };
+
+let timewarp_value = 0;
 
 function calc_remaining_distance(aircraft, fixes) {
     return calc_path_distance(

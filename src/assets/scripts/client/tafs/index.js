@@ -102,6 +102,7 @@ export default class Agent {
             this.resolver_step.bind(this),
             Math.floor(RSTEP_INTERVAL / value)
         );
+        this.departure_manager.update_timewarp_value(value);
     }
 
     step() {

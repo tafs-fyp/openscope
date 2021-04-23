@@ -2,7 +2,7 @@ import _ from "lodash";
 import { FLIGHT_CATEGORY } from "../../constants/aircraftConstants";
 
 const SEPARATION_HTHRESHOLD = 6;
-const SEPARATION_VTHRESHOLD = 1000;
+const SEPARATION_VTHRESHOLD = 999;
 
 export const CONFLICT_CATEGORIES = {
     SIDSID: 1,

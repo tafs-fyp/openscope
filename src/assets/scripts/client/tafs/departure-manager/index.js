@@ -2,15 +2,16 @@ import _ from "lodash";
 import { distanceToPoint } from "../../math/circle";
 
 const AIRPORT_ICAO = "EDDH";
-const SID_TIME_DELAY = 36000;
-const RUNWAY_TIME_DELAY = 36000;
-const TAXI_TAKEOFF_DELAY = 12000;
+const SID_TIME_DELAY = 180000;
+const RUNWAY_TIME_DELAY = 180000;
+const TAXI_TAKEOFF_DELAY = 60000;
 
 const DEPARTURE_ALT_MIN = 80;
 const DEPARTURE_ALT_MAX = 100;
 const DEPARTURE_ALT_STEP = 10;
 
 const runways_locked = {};
+let timewarp_value = 1;
 
 function aircraft_flt_plan_start(aircraft) {
     return aircraft.fms.waypoints[0]._name.replace(/[\^@]/gi, "");
@@ -80,7 +81,8 @@ class SIDModel {
         if (this.queue.length == 0) return;
         if (
             this.last_used !== null &&
-            Math.abs(new Date() - this.last_used) < SID_TIME_DELAY
+            Math.abs(new Date() - this.last_used) <
+                SID_TIME_DELAY / timewarp_value
         )
             return;
 
@@ -89,7 +91,8 @@ class SIDModel {
 
         if (
             _.defaultTo(runways_locked[runway], false) &&
-            Math.abs(new Date() - runways_locked[runway]) < RUNWAY_TIME_DELAY
+            Math.abs(new Date() - runways_locked[runway]) <
+                RUNWAY_TIME_DELAY / timewarp_value
         )
             return;
 
@@ -118,7 +121,7 @@ class SIDModel {
             this.total_departures += 1;
             runways_locked[runway] = new Date();
             this.last_used = new Date();
-        }, TAXI_TAKEOFF_DELAY);
+        }, TAXI_TAKEOFF_DELAY / timewarp_value);
 
         runways_locked[runway] = new Date();
         this.last_used = new Date();
@@ -175,5 +178,9 @@ export default class DepartureManager {
         console.log(
             `[DEPARTURE MANAGER] ${successful_departures} DEPARTURES HAVE TAKEN OFF`
         );
+    }
+
+    update_timewarp_value(value) {
+        timewarp_value = value;
     }
 }

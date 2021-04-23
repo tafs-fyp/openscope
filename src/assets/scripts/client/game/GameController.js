@@ -131,7 +131,7 @@ class GameController {
     * @chainable
     */
     setupHandlers() {
-        this._onWindowBlurHandler = this._onWindowBlur.bind(this);
+        // this._onWindowBlurHandler = this._onWindowBlur.bind(this);
         this._onWindowFocusHandler = this._onWindowFocus.bind(this);
 
         return this;
@@ -159,13 +159,13 @@ class GameController {
     enable() {
         this._eventBus.on(EVENT.SET_THEME, this._setTheme);
 
-        window.addEventListener('blur', this._onWindowBlurHandler);
+        // window.addEventListener('blur', this._onWindowBlurHandler);
         window.addEventListener('focus', this._onWindowFocusHandler);
         // for when the browser window receives or looses focus
         document.addEventListener('visibilitychange', () => {
-            if (document.visibilityState === 'hidden') {
-                return this._onWindowBlurHandler();
-            }
+            // if (document.visibilityState === 'hidden') {
+            //     return this._onWindowBlurHandler();
+            // }
 
             return this._onWindowFocusHandler();
         });
