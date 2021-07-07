@@ -2039,27 +2039,6 @@
         }
     },
     "stars": {
-        "ABTAN1W": {
-            "icao": "ABTAN1W",
-            "name": "Abtan One Whiskey",
-            "entryPoints": {
-                "ABTAN": [["ABTAN", "A160+"]]
-            },
-            "body": [["WW410", "A160+"], ["NIGSI", "A160"], ["BALAD", "A080+"]],
-            "rwy": {
-                "LOWW11": [["WW669", "A050+"], ["WW665", "A050+"], ["WW663", "A050+"], ["WW661", "A050+"], ["WW659", "A050+"], ["WW657", "A050+"], ["WW655", "A050+"], ["WW653", "A050+"], ["WW652", "A050+"], ["WW651", "A050+"]],
-                "LOWW16": [["WW686", "A050+"], ["WW684", "A050+"], ["WW682", "A050+"], ["WW680", "A050+"], ["WW678", "A050+"], ["WW676", "A050+"], ["WW674", "A050+"], ["WW673", "A050+"], ["WW672", "A050+"], ["WW671", "A050+"]],
-                "LOWW29": [["WW964", "A060+"], ["WW956", "A060+"], ["WW954", "A060+"], ["WW953", "A060+"], ["WW952", "A030+"], ["WW951", "A030+"]],
-                "LOWW34": [["WW988", "A060+"], ["WW982", "A060+"], ["WW980", "A060+"], ["WW978", "A060+"], ["WW976", "A060+"], ["WW974", "A060+"], ["WW973", "A040+"], ["WW972", "A040+"], ["WW971", "A030+"]]
-            },
-            "draw": [
-                ["ABTAN*", "WW410", "NIGSI", "BALAD"],
-                ["BALAD", "WW669", "WW665", "WW663", "WW661", "WW659", "WW657", "WW655", "WW653", "WW652", "WW651"],
-                ["BALAD", "WW686", "WW684", "WW682", "WW680", "WW678", "WW676", "WW674", "WW673", "WW672", "WW671"],
-                ["BALAD", "WW964", "WW956", "WW954", "WW953", "WW952", "WW951"],
-                ["BALAD", "WW988", "WW982", "WW980", "WW978", "WW976", "WW974", "WW973", "WW972", "WW971"]
-            ]
-        },
         "BALAD3K": {
             "icao": "BALAD3K",
             "name": "Balad Three Kilo Transition",
@@ -2128,90 +2107,6 @@
             },
             "draw": [
                 ["BALAD*", "WW054", "WW052"]
-            ]
-        },
-        "BARUG1W": {
-            "icao": "BARUG1W",
-            "name": "Barug One Whiskey",
-            "entryPoints": {
-                "BARUG": [["BARUG", "A090+|A170-"]]
-            },
-            "body": [["WW450", "A090+"], ["BALAD", "A080+"]],
-            "rwy": {
-                "LOWW11": [["WW669", "A050+"], ["WW665", "A050+"], ["WW663", "A050+"], ["WW661", "A050+"], ["WW659", "A050+"], ["WW657", "A050+"], ["WW655", "A050+"], ["WW653", "A050+"], ["WW652", "A050+"], ["WW651", "A050+"]],
-                "LOWW16": [["WW686", "A050+"], ["WW684", "A050+"], ["WW682", "A050+"], ["WW680", "A050+"], ["WW678", "A050+"], ["WW676", "A050+"], ["WW674", "A050+"], ["WW673", "A050+"], ["WW672", "A050+"], ["WW671", "A050+"]],
-                "LOWW29": [["WW964", "A060+"], ["WW956", "A060+"], ["WW954", "A060+"], ["WW953", "A060+"], ["WW952", "A030+"], ["WW951", "A030+"]],
-                "LOWW34": [["WW988", "A060+"], ["WW982", "A060+"], ["WW980", "A060+"], ["WW978", "A060+"], ["WW976", "A060+"], ["WW974", "A060+"], ["WW973", "A040+"], ["WW972", "A040+"], ["WW971", "A030+"]]
-            },
-            "draw": [
-                ["BARUG*", "WW450", "BALAD"],
-                ["BALAD", "WW669", "WW665", "WW663", "WW661", "WW659", "WW657", "WW655", "WW653", "WW652", "WW651"],
-                ["BALAD", "WW686", "WW684", "WW682", "WW680", "WW678", "WW676", "WW674", "WW673", "WW672", "WW671"],
-                ["BALAD", "WW964", "WW956", "WW954", "WW953", "WW952", "WW951"],
-                ["BALAD", "WW988", "WW982", "WW980", "WW978", "WW976", "WW974", "WW973", "WW972", "WW971"]
-            ]
-        },
-        "BUDEX1W": {
-            "icao": "BUDEX1W",
-            "name": "Budex One Whiskey",
-            "entryPoints": {
-                "BUDEX": [["BUDEX", "A170+"]]
-            },
-            "body": [["GIMBO", "A170+"], ["LADAG", "A060+"], ["MASUR", "A060+|A170-"], ["TEMTA", "A060+"], ["NERDU", "A060+"]],
-            "rwy": {
-                "LOWW11": [["WW666", "A050+"], ["WW664", "A050+"], ["WW658", "A050+"], ["WW656", "A050+"], ["WW654", "A050+"], ["WW653", "A050+"], ["WW652", "A030+"], ["WW651", "A030+"]],
-                "LOWW16": [["WW681", "A060+"], ["WW679", "A050+"], ["WW677", "A050+"], ["WW675", "A050+"], ["WW673", "A050+"], ["WW672", "A050+"], ["WW671", "A050+"]],
-                "LOWW29": [["WW963", "A060+"], ["WW961", "A060+"], ["WW959", "A060+"], ["WW957", "A060+"], ["WW955", "A060+"], ["WW953", "A060+"], ["WW952", "A050+"], ["WW951", "A050+"]],
-                "LOWW34": [["WW987", "A060+"], ["WW985", "A060+"], ["WW983", "A060+"], ["WW981", "A060+"], ["WW979", "A060+"], ["WW977", "A060+"], ["WW975", "A060+"], ["WW974", "A060+"], ["WW973", "A040+"], ["WW972", "A040+"], ["WW971", "A030+"]]
-            },
-            "draw": [
-                ["BUDEX*", "LADAG", "MASUR", "TEMTA", "NERDU"],
-                ["NERDU", "WW987", "WW985", "WW983", "WW981", "WW979", "WW977", "WW975", "WW974", "WW973", "WW972", "WW971"],
-                ["NERDU", "WW963", "WW961", "WW959", "WW957", "WW955", "WW953", "WW952", "WW951"],
-                ["NERDU", "WW681", "WW679", "WW677", "WW675", "WW673", "WW672", "WW671"],
-                ["NERDU", "WW666", "WW664", "WW658", "WW656", "WW654", "WW653", "WW652", "WW651"]
-            ]
-        },
-        "LANUX6W": {
-            "icao": "LANUX6W",
-            "name": "Lanux Six Whiskey",
-            "entryPoints": {
-                "LANUX": [["LANUX", "A150"]]
-            },
-            "body": [["NERDU", "A060+"]],
-            "rwy": {
-                "LOWW11": [["WW666", "A050+"], ["WW664", "A050+"], ["WW658", "A050+"], ["WW656", "A050+"], ["WW654", "A050+"], ["WW653", "A050+"], ["WW652", "A030+"], ["WW651", "A030+"]],
-                "LOWW16": [["WW681", "A060+"], ["WW679", "A050+"], ["WW677", "A050+"], ["WW675", "A050+"], ["WW673", "A050+"], ["WW672", "A050+"], ["WW671", "A050+"]],
-                "LOWW29": [["WW963", "A060+"], ["WW961", "A060+"], ["WW959", "A060+"], ["WW957", "A060+"], ["WW955", "A060+"], ["WW953", "A060+"], ["WW952", "A050+"], ["WW951", "A050+"]],
-                "LOWW34": [["WW987", "A060+"], ["WW985", "A060+"], ["WW983", "A060+"], ["WW981", "A060+"], ["WW979", "A060+"], ["WW977", "A060+"], ["WW975", "A060+"], ["WW974", "A060+"], ["WW973", "A040+"], ["WW972", "A040+"], ["WW971", "A030+"]]
-            },
-            "draw": [
-                ["LANUX*", "NERDU"],
-                ["NERDU", "WW987", "WW985", "WW983", "WW981", "WW979", "WW977", "WW975", "WW974", "WW973", "WW972", "WW971"],
-                ["NERDU", "WW963", "WW961", "WW959", "WW957", "WW955", "WW953", "WW952", "WW951"],
-                ["NERDU", "WW681", "WW679", "WW677", "WW675", "WW673", "WW672", "WW671"],
-                ["NERDU", "WW666", "WW664", "WW658", "WW656", "WW654", "WW653", "WW652", "WW651"]
-            ]
-        },
-        "LAPNA1W": {
-            "icao": "LAPNA1W",
-            "name": "Lapna One Whiskey",
-            "entryPoints": {
-                "LAPNA": [["LAPNA", "A170+"]]
-            },
-            "body": [["NIGSI", "A170"], ["BALAD", "A080+"]],
-            "rwy": {
-                "LOWW11": [["WW669", "A050+"], ["WW665", "A050+"], ["WW663", "A050+"], ["WW661", "A050+"], ["WW659", "A050+"], ["WW657", "A050+"], ["WW655", "A050+"], ["WW653", "A050+"], ["WW652", "A050+"], ["WW651", "A050+"]],
-                "LOWW16": [["WW686", "A050+"], ["WW684", "A050+"], ["WW682", "A050+"], ["WW680", "A050+"], ["WW678", "A050+"], ["WW676", "A050+"], ["WW674", "A050+"], ["WW673", "A050+"], ["WW672", "A050+"], ["WW671", "A050+"]],
-                "LOWW29": [["WW964", "A060+"], ["WW956", "A060+"], ["WW954", "A060+"], ["WW953", "A060+"], ["WW952", "A030+"], ["WW951", "A030+"]],
-                "LOWW34": [["WW988", "A060+"], ["WW982", "A060+"], ["WW980", "A060+"], ["WW978", "A060+"], ["WW976", "A060+"], ["WW974", "A060+"], ["WW973", "A040+"], ["WW972", "A040+"], ["WW971", "A030+"]]
-            },
-            "draw": [
-                ["LAPNA*", "NIGSI", "BALAD"],
-                ["BALAD", "WW669", "WW665", "WW663", "WW661", "WW659", "WW657", "WW655", "WW653", "WW652", "WW651"],
-                ["BALAD", "WW686", "WW684", "WW682", "WW680", "WW678", "WW676", "WW674", "WW673", "WW672", "WW671"],
-                ["BALAD", "WW964", "WW956", "WW954", "WW953", "WW952", "WW951"],
-                ["BALAD", "WW988", "WW982", "WW980", "WW978", "WW976", "WW974", "WW973", "WW972", "WW971"]
             ]
         },
         "MABOD4K": {
@@ -2284,90 +2179,6 @@
                 ["MABOD*", "WW055", "WW053"]
             ]
         },
-        "MASUR2W": {
-            "icao": "MASUR2W",
-            "name": "Masur Two Whiskey",
-            "entryPoints": {
-                "MASUR": [["MASUR", "A060+|A170-"]]
-            },
-            "body": [["TEMTA", "A060+"], ["NERDU", "A060+"]],
-            "rwy": {
-                "LOWW11": [["WW666", "A050+"], ["WW664", "A050+"], ["WW658", "A050+"], ["WW656", "A050+"], ["WW654", "A050+"], ["WW653", "A050+"], ["WW652", "A030+"], ["WW651", "A030+"]],
-                "LOWW16": [["WW681", "A060+"], ["WW679", "A050+"], ["WW677", "A050+"], ["WW675", "A050+"], ["WW673", "A050+"], ["WW672", "A050+"], ["WW671", "A050+"]],
-                "LOWW29": [["WW963", "A060+"], ["WW961", "A060+"], ["WW959", "A060+"], ["WW957", "A060+"], ["WW955", "A060+"], ["WW953", "A060+"], ["WW952", "A050+"], ["WW951", "A050+"]],
-                "LOWW34": [["WW987", "A060+"], ["WW985", "A060+"], ["WW983", "A060+"], ["WW981", "A060+"], ["WW979", "A060+"], ["WW977", "A060+"], ["WW975", "A060+"], ["WW974", "A060+"], ["WW973", "A040+"], ["WW972", "A040+"], ["WW971", "A030+"]]
-            },
-            "draw": [
-                ["MASUR*", "TEMTA", "NERDU"],
-                ["NERDU", "WW987", "WW985", "WW983", "WW981", "WW979", "WW977", "WW975", "WW974", "WW973", "WW972", "WW971"],
-                ["NERDU", "WW963", "WW961", "WW959", "WW957", "WW955", "WW953", "WW952", "WW951"],
-                ["NERDU", "WW681", "WW679", "WW677", "WW675", "WW673", "WW672", "WW671"],
-                ["NERDU", "WW666", "WW664", "WW658", "WW656", "WW654", "WW653", "WW652", "WW651"]
-            ]
-        },
-        "MIKOV7W": {
-            "icao": "MIKOV7W",
-            "name": "Mikov Seven Whiskey",
-            "entryPoints": {
-                "MIKOV": [["MIKOV", "A170"]]
-            },
-            "body": [["MABOD", "A060+"]],
-            "rwy": {
-                "LOWW11": [["WW664", "A050+"], ["WW658", "A050+"], ["WW656", "A050+"], ["WW654", "A050+"], ["WW653", "A050+"], ["WW652", "A050+"], ["WW651", "A050+"]],
-                "LOWW16": [["WW692", "A060+"], ["WW688", "A060+"], ["WW680", "A060+"], ["WW678", "A050+"], ["WW676", "A050+"], ["WW674", "A050+"], ["WW673", "A050+"], ["WW672", "A050+"], ["WW671", "A050+"]],
-                "LOWW29": [["WW967", "A060+"], ["WW965", "A060+"], ["WW961", "A060+"], ["WW959", "A060+"], ["WW957", "A060+"], ["WW955", "A060+"], ["WW953", "A060+"], ["WW952", "A030+"], ["WW951", "A030+"]],
-                "LOWW34": [["WW987", "A060+"], ["WW985", "A060+"], ["WW983", "A060+"], ["WW981", "A060+"], ["WW979", "A060+"], ["WW977", "A060+"], ["WW975", "A060+"], ["WW974", "A060+"], ["WW973", "A040+"], ["WW972", "A040+"], ["WW971", "A030+"]]
-            },
-            "draw": [
-                ["MIKOV*", "MABOD"],
-                ["MABOD", "WW664", "WW658", "WW656", "WW654", "WW653", "WW652", "WW651"],
-                ["MABOD", "WW692", "WW688", "WW680", "WW678", "WW676", "WW674", "WW673", "WW672", "WW671"],
-                ["MABOD", "WW967", "WW965", "WW961", "WW959", "WW957", "WW955", "WW953", "WW952", "WW951"],
-                ["MABOD", "WW987", "WW985", "WW983", "WW981", "WW979", "WW977", "WW975", "WW974", "WW973", "WW972", "WW971"]
-            ]
-        },
-        "NATEX1W": {
-            "icao": "NATEX1W",
-            "name": "Natex One Whiskey",
-            "entryPoints": {
-                "NATEX": [["NATEX", "A140"]]
-            },
-            "body": [["PESAT", "A060+"]],
-            "rwy": {
-                "LOWW11": [["WW697", "A050+"], ["WW665", "A050+"], ["WW663", "A050+"], ["WW661", "A050+"], ["WW659", "A050+"], ["WW657", "A050+"], ["WW655", "A050+"], ["WW653", "A050+"], ["WW652", "A050+"], ["WW651", "A050+"]],
-                "LOWW16": [["WW684", "A050+"], ["WW682", "A050+"], ["WW680", "A050+"], ["WW678", "A050+"], ["WW676", "A050+"], ["WW674", "A050+"], ["WW673", "A050+"], ["WW672", "A050+"], ["WW671", "A050+"]],
-                "LOWW29": [["WW966", "A060+"], ["WW956", "A060+"], ["WW954", "A060+"], ["WW953", "A060+"], ["WW952", "A030+"], ["WW951", "A030+"]],
-                "LOWW34": [["WW991", "A060+"], ["WW989", "A060+"], ["WW981", "A060+"], ["WW979", "A060+"], ["WW977", "A060+"], ["WW975", "A060+"], ["WW974", "A060+"], ["WW973", "A040+"], ["WW972", "A040+"], ["WW971", "A030+"]]
-            },
-            "draw": [
-                ["NATEX*", "PESAT"],
-                ["PESAT", "WW697", "WW665", "WW663", "WW661", "WW659", "WW657", "WW655", "WW653", "WW652", "WW651"],
-                ["PESAT", "WW684", "WW682", "WW680", "WW678", "WW676", "WW674", "WW673", "WW672", "WW671"],
-                ["PESAT", "WW991", "WW989", "WW981", "WW979", "WW977", "WW975", "WW974", "WW973", "WW972", "WW971"],
-                ["PESAT", "WW966", "WW956", "WW954", "WW953", "WW952", "WW951"]
-            ]
-        },
-        "NEMAL1W": {
-            "icao": "NEMAL1W",
-            "name": "Nemal One Whiskey",
-            "entryPoints": {
-                "NEMAL": [["NEMAL", "A170+"]]
-            },
-            "body": [["NIMDU", "A170+"], ["LIMRA", "A170+"], ["GAMLI", "A170+"], ["BARUG", "A170"], ["WW450", "A090+"], ["BALAD", "A080+"]],
-            "rwy": {
-                "LOWW11": [["WW669", "A050+"], ["WW665", "A050+"], ["WW663", "A050+"], ["WW661", "A050+"], ["WW659", "A050+"], ["WW657", "A050+"], ["WW655", "A050+"], ["WW653", "A050+"], ["WW652", "A050+"], ["WW651", "A050+"]],
-                "LOWW16": [["WW686", "A050+"], ["WW684", "A050+"], ["WW682", "A050+"], ["WW680", "A050+"], ["WW678", "A050+"], ["WW676", "A050+"], ["WW674", "A050+"], ["WW673", "A050+"], ["WW672", "A050+"], ["WW671", "A050+"]],
-                "LOWW29": [["WW964", "A060+"], ["WW956", "A060+"], ["WW954", "A060+"], ["WW953", "A060+"], ["WW952", "A030+"], ["WW951", "A030+"]],
-                "LOWW34": [["WW988", "A060+"], ["WW982", "A060+"], ["WW980", "A060+"], ["WW978", "A060+"], ["WW976", "A060+"], ["WW974", "A060+"], ["WW973", "A040+"], ["WW972", "A040+"], ["WW971", "A030+"]]
-            },
-            "draw": [
-                ["NEMAL*", "NIMDU", "LIMRA", "GAMLI", "BARUG", "WW450", "BALAD"],
-                ["BALAD", "WW669", "WW665", "WW663", "WW661", "WW659", "WW657", "WW655", "WW653", "WW652", "WW651"],
-                ["BALAD", "WW686", "WW684", "WW682", "WW680", "WW678", "WW676", "WW674", "WW673", "WW672", "WW671"],
-                ["BALAD", "WW964", "WW956", "WW954", "WW953", "WW952", "WW951"],
-                ["BALAD", "WW988", "WW982", "WW980", "WW978", "WW976", "WW974", "WW973", "WW972", "WW971"]
-            ]
-        },
         "NERDU4K": {
             "icao": "NERDU4K",
             "name": "Nerdu Four Kilo Transition",
@@ -2436,48 +2247,6 @@
             },
             "draw": [
                 ["NERDU*", "WW055", "WW053"]
-            ]
-        },
-        "NIGSI1W": {
-            "icao": "NIGSI1W",
-            "name": "Nigsi One Whiskey",
-            "entryPoints": {
-                "NIGSI": [["NIGSI", "A080+|A180-"]]
-            },
-            "body": [["BALAD", "A080+"]],
-            "rwy": {
-                "LOWW11": [["WW669", "A050+"], ["WW665", "A050+"], ["WW663", "A050+"], ["WW661", "A050+"], ["WW659", "A050+"], ["WW657", "A050+"], ["WW655", "A050+"], ["WW653", "A050+"], ["WW652", "A050+"], ["WW651", "A050+"]],
-                "LOWW16": [["WW686", "A050+"], ["WW684", "A050+"], ["WW682", "A050+"], ["WW680", "A050+"], ["WW678", "A050+"], ["WW676", "A050+"], ["WW674", "A050+"], ["WW673", "A050+"], ["WW672", "A050+"], ["WW671", "A050+"]],
-                "LOWW29": [["WW964", "A060+"], ["WW956", "A060+"], ["WW954", "A060+"], ["WW953", "A060+"], ["WW952", "A030+"], ["WW951", "A030+"]],
-                "LOWW34": [["WW988", "A060+"], ["WW982", "A060+"], ["WW980", "A060+"], ["WW978", "A060+"], ["WW976", "A060+"], ["WW974", "A060+"], ["WW973", "A040+"], ["WW972", "A040+"], ["WW971", "A030+"]]
-            },
-            "draw": [
-                ["NIGSI*", "BALAD"],
-                ["BALAD", "WW669", "WW665", "WW663", "WW661", "WW659", "WW657", "WW655", "WW653", "WW652", "WW651"],
-                ["BALAD", "WW686", "WW684", "WW682", "WW680", "WW678", "WW676", "WW674", "WW673", "WW672", "WW671"],
-                ["BALAD", "WW964", "WW956", "WW954", "WW953", "WW952", "WW951"],
-                ["BALAD", "WW988", "WW982", "WW980", "WW978", "WW976", "WW974", "WW973", "WW972", "WW971"]
-            ]
-        },
-        "OBUTI1W": {
-            "icao": "OBUTI1W",
-            "name": "Obuti One Whiskey",
-            "entryPoints": {
-                "OBUTI": [["OBUTI", "A180+"]]
-            },
-            "body": [["WW411", "A180+"], ["NIGSI", "A180"], ["BALAD", "A080+"]],
-            "rwy": {
-                "LOWW11": [["WW669", "A050+"], ["WW665", "A050+"], ["WW663", "A050+"], ["WW661", "A050+"], ["WW659", "A050+"], ["WW657", "A050+"], ["WW655", "A050+"], ["WW653", "A050+"], ["WW652", "A050+"], ["WW651", "A050+"]],
-                "LOWW16": [["WW686", "A050+"], ["WW684", "A050+"], ["WW682", "A050+"], ["WW680", "A050+"], ["WW678", "A050+"], ["WW676", "A050+"], ["WW674", "A050+"], ["WW673", "A050+"], ["WW672", "A050+"], ["WW671", "A050+"]],
-                "LOWW29": [["WW964", "A060+"], ["WW956", "A060+"], ["WW954", "A060+"], ["WW953", "A060+"], ["WW952", "A030+"], ["WW951", "A030+"]],
-                "LOWW34": [["WW988", "A060+"], ["WW982", "A060+"], ["WW980", "A060+"], ["WW978", "A060+"], ["WW976", "A060+"], ["WW974", "A060+"], ["WW973", "A040+"], ["WW972", "A040+"], ["WW971", "A030+"]]
-            },
-            "draw": [
-                ["OBUTI*", "WW411", "NIGSI", "BALAD"],
-                ["BALAD", "WW669", "WW665", "WW663", "WW661", "WW659", "WW657", "WW655", "WW653", "WW652", "WW651"],
-                ["BALAD", "WW686", "WW684", "WW682", "WW680", "WW678", "WW676", "WW674", "WW673", "WW672", "WW671"],
-                ["BALAD", "WW964", "WW956", "WW954", "WW953", "WW952", "WW951"],
-                ["BALAD", "WW988", "WW982", "WW980", "WW978", "WW976", "WW974", "WW973", "WW972", "WW971"]
             ]
         },
         "PESAT4K": {
@@ -2549,69 +2318,6 @@
             "draw": [
                 ["PESAT*", "WW054", "WW052"]
             ]
-        },
-        "REKLU2W": {
-            "icao": "REKLU2W",
-            "name": "Reklu Two Whiskey",
-            "entryPoints": {
-                "REKLU": [["REKLU", "A180"]]
-            },
-            "body": [["MABOD", "A060+"]],
-            "rwy": {
-                "LOWW11": [["WW664", "A050+"], ["WW658", "A050+"], ["WW656", "A050+"], ["WW654", "A050+"], ["WW653", "A050+"], ["WW652", "A050+"], ["WW651", "A050+"]],
-                "LOWW16": [["WW692", "A060+"], ["WW688", "A060+"], ["WW680", "A060+"], ["WW678", "A050+"], ["WW676", "A050+"], ["WW674", "A050+"], ["WW673", "A050+"], ["WW672", "A050+"], ["WW671", "A050+"]],
-                "LOWW29": [["WW967", "A060+"], ["WW965", "A060+"], ["WW961", "A060+"], ["WW959", "A060+"], ["WW957", "A060+"], ["WW955", "A060+"], ["WW953", "A060+"], ["WW952", "A030+"], ["WW951", "A030+"]],
-                "LOWW34": [["WW987", "A060+"], ["WW985", "A060+"], ["WW983", "A060+"], ["WW981", "A060+"], ["WW979", "A060+"], ["WW977", "A060+"], ["WW975", "A060+"], ["WW974", "A060+"], ["WW973", "A040+"], ["WW972", "A040+"], ["WW971", "A030+"]]
-            },
-            "draw": [
-                ["REKLU*", "MABOD"],
-                ["MABOD", "WW664", "WW658", "WW656", "WW654", "WW653", "WW652", "WW651"],
-                ["MABOD", "WW692", "WW688", "WW680", "WW678", "WW676", "WW674", "WW673", "WW672", "WW671"],
-                ["MABOD", "WW967", "WW965", "WW961", "WW959", "WW957", "WW955", "WW953", "WW952", "WW951"],
-                ["MABOD", "WW987", "WW985", "WW983", "WW981", "WW979", "WW977", "WW975", "WW974", "WW973", "WW972", "WW971"]
-            ]
-        },
-        "TOVKA2W": {
-            "icao": "TOVKA2W",
-            "name": "Tovka Two Whiskey",
-            "entryPoints": {
-                "TOVKA": [["TOVKA", "A160"]]
-            },
-            "body": [["WW400", "A060+"], ["WW440", "A060+"], ["MABOD", "A060+"]],
-            "rwy": {
-                "LOWW11": [["WW664", "A050+"], ["WW658", "A050+"], ["WW656", "A050+"], ["WW654", "A050+"], ["WW653", "A050+"], ["WW652", "A050+"], ["WW651", "A050+"]],
-                "LOWW16": [["WW692", "A060+"], ["WW688", "A060+"], ["WW680", "A060+"], ["WW678", "A050+"], ["WW676", "A050+"], ["WW674", "A050+"], ["WW673", "A050+"], ["WW672", "A050+"], ["WW671", "A050+"]],
-                "LOWW29": [["WW967", "A060+"], ["WW965", "A060+"], ["WW961", "A060+"], ["WW959", "A060+"], ["WW957", "A060+"], ["WW955", "A060+"], ["WW953", "A060+"], ["WW952", "A030+"], ["WW951", "A030+"]],
-                "LOWW34": [["WW987", "A060+"], ["WW985", "A060+"], ["WW983", "A060+"], ["WW981", "A060+"], ["WW979", "A060+"], ["WW977", "A060+"], ["WW975", "A060+"], ["WW974", "A060+"], ["WW973", "A040+"], ["WW972", "A040+"], ["WW971", "A030+"]]
-            },
-            "draw": [
-                ["TOVKA*", "WW400", "WW440", "MABOD"],
-                ["MABOD", "WW664", "WW658", "WW656", "WW654", "WW653", "WW652", "WW651"],
-                ["MABOD", "WW692", "WW688", "WW680", "WW678", "WW676", "WW674", "WW673", "WW672", "WW671"],
-                ["MABOD", "WW967", "WW965", "WW961", "WW959", "WW957", "WW955", "WW953", "WW952", "WW951"],
-                ["MABOD", "WW987", "WW985", "WW983", "WW981", "WW979", "WW977", "WW975", "WW974", "WW973", "WW972", "WW971"]
-            ]
-        },
-        "VENEN2W": {
-            "icao": "VENEN2W",
-            "name": "Venen Two Whiskey",
-            "entryPoints": {
-                "VENEN": [["VENEN", "A170+"]]
-            },
-            "body": [["WW190", "A170+"], ["WW191", "A170+"], ["WW192", "A170+"], ["MASUR", "A170"], ["TEMTA", "A060+"], ["NERDU", "A060+"]],
-            "rwy": {
-                "LOWW11": [["WW666", "A050+"], ["WW664", "A050+"], ["WW658", "A050+"], ["WW656", "A050+"], ["WW654", "A050+"], ["WW653", "A050+"], ["WW652", "A030+"], ["WW651", "A030+"]],
-                "LOWW16": [["WW681", "A060+"], ["WW679", "A050+"], ["WW677", "A050+"], ["WW675", "A050+"], ["WW673", "A050+"], ["WW672", "A050+"], ["WW671", "A050+"]],
-                "LOWW29": [["WW963", "A060+"], ["WW961", "A060+"], ["WW959", "A060+"], ["WW957", "A060+"], ["WW955", "A060+"], ["WW953", "A060+"], ["WW952", "A050+"], ["WW951", "A050+"]],
-                "LOWW34": [["WW987", "A060+"], ["WW985", "A060+"], ["WW983", "A060+"], ["WW981", "A060+"], ["WW979", "A060+"], ["WW977", "A060+"], ["WW975", "A060+"], ["WW974", "A060+"], ["WW973", "A040+"], ["WW972", "A040+"], ["WW971", "A030+"]]
-            },
-            "draw": [
-                ["VENEN*", "WW190", "WW191", "WW192", "MASUR", "TEMTA", "NERDU"],
-                ["NERDU", "WW987", "WW985", "WW983", "WW981", "WW979", "WW977", "WW975", "WW974", "WW973", "WW972", "WW971"],
-                ["NERDU", "WW963", "WW961", "WW959", "WW957", "WW955", "WW953", "WW952", "WW951"],
-                ["NERDU", "WW681", "WW679", "WW677", "WW675", "WW673", "WW672", "WW671"],
-                ["NERDU", "WW666", "WW664", "WW658", "WW656", "WW654", "WW653", "WW652", "WW651"]
-            ]
         }
     },
     "spawnPatterns": [
@@ -2619,7 +2325,7 @@
             "origin": "LOWW",
             "destination": "",
             "category": "departure",
-            "route": "LOWW29.ADAMA2C.ADAMA..VEDER",
+            "route": "ADAMA..VEDER",
             "altitude": "",
             "speed": "",
             "method": "random",
@@ -2662,7 +2368,7 @@
             "origin": "LOWW",
             "destination": "",
             "category": "departure",
-            "route": "LOWW29.ARSIN1C.ARSIN..OLATI",
+            "route": "ARSIN..OLATI",
             "altitude": "",
             "speed": "",
             "method": "random",
@@ -2701,7 +2407,7 @@
             "origin": "LOWW",
             "destination": "",
             "category": "departure",
-            "route": "LOWW29.DITIS1C.DITIS.M174.NEPUX",
+            "route": "DITIS..NEPUX",
             "altitude": "",
             "speed": "",
             "method": "random",
@@ -2742,7 +2448,7 @@
             "origin": "LOWW",
             "destination": "",
             "category": "departure",
-            "route": "LOWW29.KOXER1C.KOXER..SOMID..VAPUS",
+            "route": "KOXER..SOMID..VAPUS",
             "altitude": "",
             "speed": "",
             "method": "random",
@@ -2777,7 +2483,7 @@
             "origin": "LOWW",
             "destination": "",
             "category": "departure",
-            "route": "LOWW29.LANUX2C.LANUX..OKF.L858.HDO",
+            "route": "LANUX..OKF..VLM..RISUK..ULNIP..HDO",
             "altitude": "",
             "speed": "",
             "method": "random",
@@ -2806,7 +2512,7 @@
             "origin": "LOWW",
             "destination": "",
             "category": "departure",
-            "route": "LOWW29.LEDVA3C.LEDVA.L156.OGDAS",
+            "route": "LEDVA..GINAT..HLV..OGDAS",
             "altitude": "",
             "speed": "",
             "method": "random",
@@ -2835,7 +2541,7 @@
             "origin": "LOWW",
             "destination": "",
             "category": "departure",
-            "route": "LOWW29.LUGEM1C.LUGEM..SUBEN.T161.ERNAS",
+            "route": "LUGEM..SUBEN..NENUM..AKINI..NIMDI..ERNAS",
             "altitude": "",
             "speed": "",
             "method": "random",
@@ -2871,7 +2577,7 @@
             "origin": "LOWW",
             "destination": "",
             "category": "departure",
-            "route": "LOWW29.MEDIX1C.MEDIX..LAMSI.L604.SULUS",
+            "route": "MEDIX..LAMSI..LALIN..RUDNO..RODIS..MOOCE..EKSOS..ANELA..BAMAS..SULUS",
             "altitude": "",
             "speed": "",
             "method": "random",
@@ -2910,7 +2616,7 @@
             "origin": "LOWW",
             "destination": "",
             "category": "departure",
-            "route": "LOWW29.OSPEN4C.OSPEN..ABRUK..SETAL..DETSA",
+            "route": "OSPEN..ABRUK..SETAL..DETSA",
             "altitude": "",
             "speed": "",
             "method": "random",
@@ -2940,7 +2646,7 @@
             "origin": "LOWW",
             "destination": "",
             "category": "departure",
-            "route": "LOWW29.RUPET2C.RUPET..GRZ..RADLY",
+            "route": "RUPET..GRZ..RADLY",
             "altitude": "",
             "speed": "",
             "method": "random",
@@ -2969,7 +2675,7 @@
             "origin": "LOWW",
             "destination": "",
             "category": "departure",
-            "route": "LOWW29.SOVIL1C.SOVIL..SITNI..BAGSI..MATIG..AMADI",
+            "route": "SOVIL..SITNI..BAGSI..MATIG..AMADI",
             "altitude": "",
             "speed": "",
             "method": "random",
@@ -3003,7 +2709,7 @@
             "origin": "LOWW",
             "destination": "",
             "category": "departure",
-            "route": "LOWW29.STEIN3C.STEIN..NOHAT..KOPRY",
+            "route": "STEIN..NOHAT..KOPRY",
             "altitude": "",
             "speed": "",
             "method": "random",
@@ -3028,7 +2734,7 @@
             "origin": "",
             "destination": "LOWW",
             "category": "arrival",
-            "route": "HDO.L858.LANUX.LANUX6W.LOWW34",
+            "route": "HDO..ULNIP..RISUK..VLM..OKF..LANUX..NERDU",
             "altitude": 25000,
             "speed": 280,
             "method": "random",
@@ -3065,7 +2771,7 @@
             "origin": "",
             "destination": "LOWW",
             "category": "arrival",
-            "route": "MAXUR..VALLU..LAPNA.LAPNA1W.LOWW34",
+            "route": "MAXUR..VALLU..LAPNA..NIGSI..BALAD",
             "altitude": 25000,
             "speed": 280,
             "method": "random",
@@ -3096,7 +2802,7 @@
             "origin": "",
             "destination": "LOWW",
             "category": "arrival",
-            "route": "ABRAX.T135.MIKOV.MIKOV7W.LOWW34",
+            "route": "ABRAX..BELUX..ADISU..MIKOV..MABOD",
             "altitude": 25000,
             "speed": 280,
             "method": "random",
@@ -3123,7 +2829,7 @@
             "origin": "",
             "destination": "LOWW",
             "category": "arrival",
-            "route": "KULOG..ZOLKU..NATEX.NATEX1W.LOWW34",
+            "route": "KULOG..ZOLKU..NATEX..PESAT",
             "altitude": 25000,
             "speed": 280,
             "method": "random",
@@ -3172,7 +2878,7 @@
             "origin": "",
             "destination": "LOWW",
             "category": "arrival",
-            "route": "NEMAL.NEMAL1W.LOWW34",
+            "route": "NEMAL..NIMDU..LIMRA..GAMLI..BARUG..WW450..BALAD",
             "altitude": 25000,
             "speed": 280,
             "method": "random",
@@ -3210,7 +2916,7 @@
             "origin": "",
             "destination": "LOWW",
             "category": "arrival",
-            "route": "BABNI..ETIPA..REKLU.REKLU2W.LOWW34",
+            "route": "BABNI..ETIPA..REKLU..MABOD",
             "altitude": 25000,
             "speed": 280,
             "method": "random",
@@ -3246,7 +2952,7 @@
             "origin": "",
             "destination": "LOWW",
             "category": "arrival",
-            "route": "ABITU..ASTON..TOVKA.TOVKA2W.LOWW34",
+            "route": "ABITU..ASTON..TOVKA..WW400..WW440..MABOD",
             "altitude": 25000,
             "speed": 280,
             "method": "random",
@@ -3279,7 +2985,7 @@
             "origin": "",
             "destination": "LOWW",
             "category": "arrival",
-            "route": "ADLET..VENEN.VENEN2W.LOWW34",
+            "route": "ADLET..VENEN..WW190..WW191..WW192..MASUR..TEMTA..NERDU",
             "altitude": 25000,
             "speed": 280,
             "method": "random",
