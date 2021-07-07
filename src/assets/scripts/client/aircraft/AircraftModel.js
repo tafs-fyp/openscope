@@ -2098,6 +2098,8 @@ export default class AircraftModel {
                     return this._calculateTargetedAltitudeVnavDescent(altitudeMaximumWaypoint, altitudeMaximum);
                 }
             }
+
+            return altitudeMinimum;
         } else {
             // we want to climb...
             if (!maximumAltitudeExists || this.mcp.altitude < altitudeMaximumWaypoint.altitudeMaximum) {
