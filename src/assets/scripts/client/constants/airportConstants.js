@@ -54,7 +54,7 @@ export const AIRPORT_CONSTANTS = {
      * @type {number}
      * @final
      */
-    MIN_ENTRAIL_DISTANCE_NM: 5.5,
+    MIN_ENTRAIL_DISTANCE_NM: 10,
 
     SRS_REDUCED_MINIMA_FEET: {
         CAT1: 3000,
