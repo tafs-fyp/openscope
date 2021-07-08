@@ -1,5 +1,6 @@
 import _ from "lodash";
 import { distanceToPoint } from "../../math/circle";
+import { FLIGHT_PHASE } from "../../constants/aircraftConstants";
 
 const AIRPORT_ICAO = "EDDH";
 const SID_TIME_DELAY = 180000;
@@ -108,7 +109,12 @@ class SIDModel {
 
         sim_writer.send_command(`${aircraft.callsign} taxi ${runway}`);
 
-        setTimeout(() => {
+        const taxi_plane = () => {
+            if (aircraft.flightPhase === FLIGHT_PHASE.TAXI) {
+                setTimeout(taxi_plane, 60000 / timewarp_value);
+                return;
+            }
+
             sim_writer.send_command(
                 `${aircraft.callsign} takeoff cvs ${
                     _.random(
@@ -121,8 +127,9 @@ class SIDModel {
             this.total_departures += 1;
             runways_locked[runway] = new Date();
             this.last_used = new Date();
-        }, TAXI_TAKEOFF_DELAY / timewarp_value);
+        };
 
+        setTimeout(taxi_plane, TAXI_TAKEOFF_DELAY / timewarp_value);
         runways_locked[runway] = new Date();
         this.last_used = new Date();
     }

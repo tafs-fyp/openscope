@@ -9,7 +9,7 @@ const HOLDING_UNAVAILABLE_ALT = 1700;
 
 const MIN_WPS_FOR_HOLDING = 3;
 const MIN_DIST_TO_RESOLVE = 2;
-const MIN_TIME_TO_RESOLVE = 60;
+const MIN_TIME_TO_RESOLVE = 300;
 
 const LOSS_OF_SEPARATION_DIST = 2;
 const LOSS_OF_SEPARATION_ALT = 500;
@@ -103,7 +103,7 @@ export default class ConflictResolution {
 
     is_false_positive_starstar(conflict) {
         if (conflict.vertical >= 800) return true;
-        if (conflict.horizontal < MIN_DIST_TO_RESOLVE + 0.5) return false;
+        if (conflict.horizontal < MIN_DIST_TO_RESOLVE + 1) return false;
 
         const first = this.sim_reader.get_aircraft_by_callsign(conflict.first);
         const second = this.sim_reader.get_aircraft_by_callsign(
@@ -242,7 +242,7 @@ export default class ConflictResolution {
                     conflict: conflict,
                     callsign: callsign,
                     instruction: RESOLUTIONS.ALTITUDE,
-                    altitude: 1700,
+                    altitude: HOLDING_UNAVAILABLE_ALT,
                     timestamp: RESOLUTION_TIME,
                 };
                 console.log(

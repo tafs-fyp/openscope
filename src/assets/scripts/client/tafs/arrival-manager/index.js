@@ -3,9 +3,7 @@ import { distanceToPoint } from "../../math/circle";
 
 const AIRPORT_ICAO = "EDDH";
 const ASSIGNED_ALT = 2000;
-// const ARRIVAL_ALT_MIN = 20;
-// const ARRIVAL_ALT_MAX = 40;
-// const ARRIVAL_ALT_STEP = 10;
+const ASSIGNED_SPD = 240;
 
 function aircraft_flt_plan_end(aircraft) {
     return _.last(aircraft.fms.waypoints)._name.replace(/[\^@]/gi, "");
@@ -74,17 +72,8 @@ class STARModel {
             `${aircraft.callsign} route ${entry}.${this.sim_star._icao}.${exit}`
         );
 
-        // DO NOT DELETE
-        // sim_writer.send_command(
-        //     `${aircraft.callsign} dvs ${
-        //         _.random(
-        //             ARRIVAL_ALT_MIN / ARRIVAL_ALT_STEP,
-        //             ARRIVAL_ALT_MAX / ARRIVAL_ALT_STEP
-        //         ) * ARRIVAL_ALT_STEP
-        //     }`
-        // );
         sim_writer.send_command(
-            `${aircraft.callsign} dvs ${ASSIGNED_ALT / 100}`
+            `${aircraft.callsign} dvs ${ASSIGNED_ALT / 100} speed ${ASSIGNED_SPD}`
         );
 
         this.traffic += 1;
@@ -92,35 +81,6 @@ class STARModel {
     }
 
     clear_ils(sim_writer) {
-        // DO NOT DELETE
-        // _.remove(this.flying, ([aircraft, _entry, exit]) => {
-        //     if (
-        //         aircraft.fms.waypoints.length === 1 &&
-        //         aircraft.altitude === ARRIVAL_ALT_MIN * 100
-        //     ) {
-        //         sim_writer.send_command(
-        //             `${aircraft.callsign} ils ${exit.replace(AIRPORT_ICAO, "")}`
-        //         );
-
-        //         this.traffic -= 1;
-        //         return true;
-        //     }
-
-        //     if (aircraft.mcp.altitude === ARRIVAL_ALT_MIN * 100) return false;
-
-        //     const rem_path = _.map(
-        //         aircraft.fms.waypoints,
-        //         (waypoint) => waypoint.name
-        //     );
-        //     const rem_distance = calc_path_distance(rem_path, this.fixes);
-
-        //     if (rem_distance < DESCEND_FOR_ILS_DISTANCE) {
-        //         sim_writer.send_command(
-        //             `${aircraft.callsign} dvs ${ARRIVAL_ALT_MIN}`
-        //         );
-        //     }
-        //     return false;
-        // });
         _.remove(this.flying, ([aircraft, _entry, exit]) => {
             if (aircraft.fms.waypoints.length > 1) return false;
 
