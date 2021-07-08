@@ -1,11 +1,10 @@
 import _ from "lodash";
 import { distanceToPoint } from "../../math/circle";
 
+import { ARRIVAL_ASSIGNED_ALT, HOLDING_UNAVAILABLE_ALT } from "../config";
+
 const SPEED_CHANGE = 25;
 const ALTITUTDE_CHANGE = 1000;
-
-const ARRIVAL_ASSIGNED_ALT = 2000;
-const HOLDING_UNAVAILABLE_ALT = 1700;
 
 const MIN_WPS_FOR_HOLDING = 3;
 const MIN_DIST_TO_RESOLVE = 2;

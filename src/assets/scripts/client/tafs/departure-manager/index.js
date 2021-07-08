@@ -2,14 +2,16 @@ import _ from "lodash";
 import { distanceToPoint } from "../../math/circle";
 import { FLIGHT_PHASE } from "../../constants/aircraftConstants";
 
-const AIRPORT_ICAO = "EDDH";
+import {
+    AIRPORT_ICAO,
+    DEPARTURE_ALT_MAX,
+    DEPARTURE_ALT_MIN,
+    DEPARTURE_ALT_STEP,
+} from "../config";
+
 const SID_TIME_DELAY = 180000;
 const RUNWAY_TIME_DELAY = 180000;
 const TAXI_TAKEOFF_DELAY = 60000;
-
-const DEPARTURE_ALT_MIN = 80;
-const DEPARTURE_ALT_MAX = 100;
-const DEPARTURE_ALT_STEP = 10;
 
 const runways_locked = {};
 let timewarp_value = 1;

@@ -1,9 +1,11 @@
 import _ from "lodash";
 import { distanceToPoint } from "../../math/circle";
 
-const AIRPORT_ICAO = "EDDH";
-const ASSIGNED_ALT = 2000;
-const ASSIGNED_SPD = 240;
+import {
+    AIRPORT_ICAO,
+    ARRIVAL_ASSIGNED_ALT,
+    ARRIVAL_ASSIGNED_SPD,
+} from "../config";
 
 function aircraft_flt_plan_end(aircraft) {
     return _.last(aircraft.fms.waypoints)._name.replace(/[\^@]/gi, "");
@@ -73,7 +75,9 @@ class STARModel {
         );
 
         sim_writer.send_command(
-            `${aircraft.callsign} dvs ${ASSIGNED_ALT / 100} speed ${ASSIGNED_SPD}`
+            `${aircraft.callsign} dvs ${
+                ARRIVAL_ASSIGNED_ALT / 100
+            } speed ${ARRIVAL_ASSIGNED_SPD}`
         );
 
         this.traffic += 1;
