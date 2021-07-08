@@ -262,7 +262,9 @@ const _assembleSpawnOffsets = (entrailDistance, totalDistance = 0) => {
 
     // distance between successive arrivals in nm
     while (distanceAlongRoute > smallestIntervalNm) {
-        const interval = _random(smallestIntervalNm, largestIntervalNm, true);
+        const interval =
+            smallestIntervalNm +
+            (largestIntervalNm - smallestIntervalNm) * Math.pow(Math.random(), 0.3);
         distanceAlongRoute -= interval;
 
         if (distanceAlongRoute < smallestIntervalNm) {
@@ -386,5 +388,7 @@ export const buildPreSpawnAircraft = (spawnPatternJson, currentAirport) => {
         throw new TypeError('Invalid parameter passed to buildPreSpawnAircraft. Expected currentAirport to be defined');
     }
 
-    return _preSpawn(spawnPatternJson, currentAirport);
+    if (Math.random() < 0.4)
+        return _preSpawn(spawnPatternJson, currentAirport);
+    else return [];
 };

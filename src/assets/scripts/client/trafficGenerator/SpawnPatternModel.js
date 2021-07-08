@@ -777,7 +777,7 @@ export default class SpawnPatternModel extends BaseModel {
 
         const delay =
             minimumDelay +
-            (maximumDelay - minimumDelay) * Math.pow(Math.random(), 0.65);
+            (maximumDelay - minimumDelay) * Math.pow(Math.random(), 0.5);
 
         return delay;
     }
